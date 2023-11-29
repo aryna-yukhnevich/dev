@@ -153,7 +153,7 @@ Filters events where the response status code indicates a failure. This includes
 
 ### via AWS Lambda Destinations
 This is a feature that provides visibility into Lambda function invocations and routes the execution results to AWS services (EventBridge). \
-More details can be found here https://aws.amazon.com/blogs/compute/introducing-aws-lambda-destinations/ . \
+More details can be found here https://aws.amazon.com/blogs/compute/introducing-aws-lambda-destinations/ . 
 
 With Destinations, we can route asynchronous function results as an execution record to a destination resource without writing additional code. An execution record contains details about the request and response in JSON format including version, timestamp, request context, request payload, response context, and response payload. For each execution status such as Success or Failure we can choose EventBridge.
 
@@ -164,9 +164,7 @@ The invocation record contains details about the request and response in JSON fo
 {
   "source": ["aws.lambda"],
   "detail-type": ["Lambda Function Invocation Result - Success"],
-  "resources": [
-    "ARN"
-  ]
+  "resources": ["Lambda function ARN"]
 }
 ```
 - Failure
@@ -174,8 +172,18 @@ The invocation record contains details about the request and response in JSON fo
 {
   "source": ["aws.lambda"],
   "detail-type": ["Lambda Function Invocation Result - Failure"],
-  "resources": [
-    "ARN"
-  ]
+  "resources": ["Lambda function ARN"]
 }
 ```
+
+### via CloudWatch Logs
+CloudWatch Logs message event with an event that contains log data. The value of the data field is a Base64-encoded .gzip file archive:
+```json
+{
+  "awslogs": {
+    "data": "BASE64_ENCODED_LOG_DATA"
+  }
+}
+```
+We would need to decode the data field to get the actual log data. The log data will be in a JSON format and contain information about the log group, log stream, and the log events that matched the filter pattern.
+
