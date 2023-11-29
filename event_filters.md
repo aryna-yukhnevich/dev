@@ -7,10 +7,9 @@ The full list of AWS services that generate events and send them to EventBridge 
 The following event pattern in JSON format will be applied for each service in scope:
 ```json
 {
-  "source": ["service_name"],
-  "detail-type": ["event_name"],
+  "source": "event source",
+  "detail-type": "event name",  
   "detail": {
-    "state": ["status_name"]
   }
 }
 ```
@@ -176,8 +175,9 @@ The invocation record contains details about the request and response in JSON fo
 }
 ```
 
-### via CloudWatch Logs
-CloudWatch Logs message event with an event that contains log data. The value of the data field is a Base64-encoded .gzip file archive:
+### via CloudWatch Logs Group
+Lambda function with logging information in a structured format can be filtered using CloudWatch Logs subscription filters.
+CloudWatch Logs message event contains log data in Base64-encoded .gzip file archive:
 ```json
 {
   "awslogs": {
