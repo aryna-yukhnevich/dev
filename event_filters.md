@@ -112,6 +112,15 @@ Amazon EMR Serverless Job Events:
 
 ### via CloudTrail
 AWS CloudTrail records API activity in AWS account, including Lambda function invocations.
+```json
+{
+  "source": ["aws.lambda"],
+  "detail-type": ["AWS API Call via CloudTrail"],
+  "detail": {
+    "eventSource": ["lambda.amazonaws.com"]
+  }
+}
+```
 
 - Failure \
 Filters events where the response status code indicates a failure. This includes HTTP status codes 400 (Bad Request) and 500 (Internal Server Error)
@@ -154,36 +163,86 @@ Filters events where the response status code indicates a failure. This includes
 This is a feature that provides visibility into Lambda function invocations and routes the execution results to AWS services (EventBridge). \
 More details can be found here https://aws.amazon.com/blogs/compute/introducing-aws-lambda-destinations/ . 
 
-With Destinations, we can route asynchronous function results as an execution record to a destination resource without writing additional code. An execution record contains details about the request and response in JSON format including version, timestamp, request context, request payload, response context, and response payload. For each execution status such as Success or Failure we can choose EventBridge.
+Just ot mention that this feature works only when a lambda function is invoked asynchronously.
+To configure Lambda Destinations on Lambda functions, the following invoke config looks can be applied:
 
-Lambda passes the invocation record as the detail in the PutEvents call to EventBridge. The value for the source event field is lambda. The value for the detail-type event field is either "Lambda Function Invocation Result - Success" or "Lambda Function Invocation Result - Failure". The resource event field contains the function and destination Amazon Resource Names (ARNs).
-The invocation record contains details about the request and response in JSON format:
-- Success
+```python
+invoke_config = lambda_.CfnEventInvokeConfig(
+            self,
+            "MyLambdaInvokeConfig",
+            function_name=lambda_function.function_name,
+            qualifier='$LATEST',
+            destination_config=lambda_.CfnEventInvokeConfig.DestinationConfigProperty(
+                on_failure=lambda_.CfnEventInvokeConfig.OnFailureProperty(
+                    destination=EventBusARN
+                ),
+                on_success=lambda_.CfnEventInvokeConfig.OnSuccessProperty(
+                    destination=EventBusARN
+                )
+            ),
+        ) 
+```
+
+And the permission to put events to EventBridge should be assigned to lambda:
+```python
+    lambda_role.add_to_policy(
+            iam.PolicyStatement(
+                actions=["events:PutEvents"],
+                effect=iam.Effect.ALLOW,
+                resources=[EventBusARN],
+            )
+        )
+```
+
+- Success event pattern
 ```json
 {
-  "source": ["aws.lambda"],
+  "source": ["lambda"],
   "detail-type": ["Lambda Function Invocation Result - Success"],
-  "resources": ["Lambda function ARN"]
 }
 ```
-- Failure
+- Failure event pattern
 ```json
 {
-  "source": ["aws.lambda"],
+  "source": ["lambda"],
   "detail-type": ["Lambda Function Invocation Result - Failure"],
-  "resources": ["Lambda function ARN"]
 }
 ```
 
-### via CloudWatch Logs Group
-Lambda function with logging information in a structured format can be filtered using CloudWatch Logs subscription filters.
-CloudWatch Logs message event contains log data in Base64-encoded .gzip file archive:
+Additionally, event pattern applied to custom Event Bus should be updated as follows (to consider lambda events):
 ```json
 {
-  "awslogs": {
-    "data": "BASE64_ENCODED_LOG_DATA"
-  }
+  "source": [{
+    "prefix": "aws"
+  }, "lambda"]
 }
 ```
-We would need to decode the data field to get the actual log data. The log data will be in a JSON format and contain information about the log group, log stream, and the log events that matched the filter pattern.
 
+### via CloudWatch Log Groups
+Another option can be considered - to query Lambda runs using CloudWatch Logs. By default, Lambda sends logs to a log group named /aws/lambda/<function name>.
+In this case we should assign "AWSLambdaBasicExecutionRole" service role to Lambda function in order to be able to send the logs to Amazon CloudWatch Logs:
+
+```python
+      lambda_role.add_managed_policy(
+            iam.ManagedPolicy.from_aws_managed_policy_name(
+                "service-role/AWSLambdaBasicExecutionRole"
+            )
+        )
+```
+
+The queries can be run using Monitoring Data Extraction component and the results can be stored in the Timestream table.
+The query to extract failed lambda runs can look as follows:
+
+```python
+from helpers.cloudwatch import query_logs
+
+ def retrieve_errors_list(self):
+      log_group_name = f"/aws/lambda/{self.lambda_name}"
+      query_string = """
+      fields @timestamp, @message
+      | filter @message like '[ERROR]'
+      | sort @timestamp desc
+      """
+      self.errors_list = query_logs(self.client, log_group_name, query_string, self.start_time, self.end_time)  
+      return self.errors_list
+```
