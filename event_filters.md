@@ -112,6 +112,8 @@ Amazon EMR Serverless Job Events:
 
 ### via CloudTrail
 AWS CloudTrail records API activity in AWS account, including Lambda function invocations.
+First of all, a new trail to log lambda data events should be created. Though there is no cost to log these events, we will incur charges for the S3 bucket that will be created to store the logs.
+
 ```json
 {
   "source": ["aws.lambda"],
