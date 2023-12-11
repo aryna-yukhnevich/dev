@@ -110,7 +110,14 @@ Amazon EMR Serverless Job Events:
 
 ## Research on Lambda events
 
+Option | Status | Description
+--- | --- | --- | 
+CloudTrail            | Not preferred  | lambda function states are not recorded; a new trail to log lambda events should be created | 
+Lambda Destinations   | Not preferred | despite the fact that failed/success function states can be easily captured, this feature should be enabled on the customer's side | 
+CloudWatch Log Groups | Selected | lambda logs can be queried once in X minutes by Monitoring Data extraction component  | 
+
 ### via CloudTrail
+
 AWS CloudTrail records API activity in AWS account, including Lambda function invocations.
 First of all, a new trail to log lambda data events should be created. Though there is no cost to log these events, we will incur charges for the S3 bucket that will be created to store the logs.
 
@@ -123,43 +130,8 @@ First of all, a new trail to log lambda data events should be created. Though th
   }
 }
 ```
+Unfortunately, lambda function states are not recorded.
 
-- Failure \
-Filters events where the response status code indicates a failure. This includes HTTP status codes 400 (Bad Request) and 500 (Internal Server Error)
-```json
-{
-    "source": ["aws.lambda"],
-    "detail-type": ["AWS API Call via CloudTrail"],
-    "detail": {
-        "eventSource": ["lambda.amazonaws.com"],
-        "eventName": ["InvokeFunction"],
-        "responseElements": {
-            "statusCode": [400, 500]
-        },
-        "requestParameters": {
-            "functionName": ["YourLambdaFunctionName"]
-        }
-    }
-}
-```
-
-- Success
-```json
-{
-    "source": ["aws.lambda"],
-    "detail-type": ["AWS API Call via CloudTrail"],
-    "detail": {
-      "eventSource": ["lambda.amazonaws.com"],
-      "eventName": ["InvokeFunction"],
-      "responseElements": {
-           "statusCode": [200]
-        },
-        "requestParameters": {
-            "functionName": ["YourLambdaFunctionName"]
-        }
-    }
-}
-```
 
 ### via AWS Lambda Destinations
 This is a feature that provides visibility into Lambda function invocations and routes the execution results to AWS services (EventBridge). \
@@ -221,8 +193,8 @@ Additionally, event pattern applied to custom Event Bus should be updated as fol
 ```
 
 ### via CloudWatch Log Groups
-Another option can be considered - to query Lambda runs using CloudWatch Logs. By default, Lambda sends logs to a log group named /aws/lambda/<function name>.
-In this case we should assign "AWSLambdaBasicExecutionRole" service role to Lambda function in order to be able to send the logs to Amazon CloudWatch Logs:
+Another option can be considered - to query Lambda runs using CloudWatch Logs. 
+"AWSLambdaBasicExecutionRole" service role should be assigned to Lambda function in order to be able to send the logs to Amazon CloudWatch Logs:
 
 ```python
       lambda_role.add_managed_policy(
@@ -231,9 +203,32 @@ In this case we should assign "AWSLambdaBasicExecutionRole" service role to Lamb
             )
         )
 ```
+By default, Lambda sends logs to a log group named /aws/lambda/function_name (https://docs.aws.amazon.com/lambda/latest/dg/monitoring-cloudwatchlogs.html).
+But also, the log group assigned to lambda function can be extracted from the function configuration:
 
-The queries can be run using Monitoring Data Extraction component and the results can be stored in the Timestream table.
-The query to extract failed lambda runs can look as follows:
+```python
+import boto3
+
+def get_lambda_log_group(lambda_function_name):
+    # Create Lambda client
+    lambda_client = boto3.client('lambda')
+
+    # Get Lambda function configuration
+    response = lambda_client.get_function(FunctionName=lambda_function_name)
+
+    # Extract log group name from the function configuration
+    log_group_name = response['Configuration']['LoggingConfig']['LogGroup']
+
+    return log_group_name
+
+lambda_function_name = 'lambda-salmon-alerting-devay'
+log_group = get_lambda_log_group(lambda_function_name)
+
+print(f"Log Group for Lambda Function '{lambda_function_name}': {log_group}")
+```
+
+The CloudWatch Log Groups can be queried once in X minutes using Monitoring Data Extraction component and the results can be stored in the Timestream table.
+The sample query to extract failed lambda runs provided below:
 
 ```python
 from helpers.cloudwatch import query_logs
