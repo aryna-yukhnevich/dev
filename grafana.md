@@ -1,5 +1,5 @@
 # Grafana Deployment options
-The Timestream datasource plugin required: \
+The Timestream datasource plugin required: 
 - https://grafana.com/grafana/plugins/grafana-timestream-datasource/
 
 Costs depend on:
@@ -29,6 +29,13 @@ Deployment:
 Costs:
 - EC2 instance costs: we can start with t3.medium, t3.large instance types, suitable for small to medium-sized deployments with moderate traffic.
 
+## Containerized deployment on ECS or EKS
+Deployment:
+- Deploy Grafana as a Docker container
+- Official Grafana Docker image: https://hub.docker.com/r/grafana/grafana/ 
+
+Costs:
+- Similar to EC2 costs but with additional costs for ECS or EKS
 
 ## Grafana on Kubernetes
 Deployment:
@@ -39,15 +46,6 @@ Deployment:
 
 Costs:
 - Similar to EC2 costs but with additional costs for EKS
-
-## Containerized deployment on ECS or EKS
-Deployment:
-- Deploy Grafana as a Docker container.
-- Official Grafana Docker image: https://hub.docker.com/r/grafana/grafana/ 
-
-Costs:
-- Similar to EC2 costs but with additional costs for ECS or EKS
-
 
 ## Grafana on Fargate
 Deployment:
@@ -77,4 +75,4 @@ Docs:
 
 
 ## Deploy the dashboard to Grafana using AWSCDK
--https://pypi.org/project/cdk-grafana-json-dashboard-handler/ 
+- https://pypi.org/project/cdk-grafana-json-dashboard-handler/ 
