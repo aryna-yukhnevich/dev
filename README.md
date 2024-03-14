@@ -10,7 +10,7 @@ It can suit the need of a small team (you don't have to spend time developing yo
 ## SALMON Key Features
 
 - **Immediate Alerts**: Get instant notifications for pipeline failures, like a glitch in your Glue Job.
-    ![Alerts](/docs/images/alerting-email.png "Alerting email sample")
+    ![Alerts](/alerting-email.png "Alerting email sample")
 
 - **SLA Monitoring**: Track execution times, like Step Function durations, and spot when it exceeds the predefined threshold.
 - **Daily Digests**: Receive a comprehensive daily email summarizing your pipeline's health – perfect for a quick status check.
