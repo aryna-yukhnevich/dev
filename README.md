@@ -2,6 +2,7 @@
 
 # Table of Contents
 * [Overview](#overview)
+* [Configuration Structure](#configuration-structure)
 * [Configuration Files](#configuration-files)
 * [Configuration Steps](#configuration-steps)
     1. [Copy Configuration Samples](#copy-configuration-samples)
@@ -13,7 +14,30 @@
 
 ## Overview
 This guide provides instructions on how to configure the SALMON project to suit your monitoring and alerting needs.
-During the CDK deployment process, these configuration files from the /config/settings directory will be uploaded to the S3 bucket automatically.
+
+## Configuration Structure
+The configuration files are structured as follows:
+```
+project_root/
+│
+└── config/
+│
+├── sample_settings/
+│ ├── general.json
+│ ├── monitoring_groups.json
+│ ├── recipients.json
+│ └── replacements.json
+│
+└── settings/
+├── general.json
+├── monitoring_groups.json
+├── recipients.json
+└── replacements.json
+```
+In the `sample_settings` directory, you will find sample configurations that you can use as a template. After copying them to the `settings` directory, fill in the necessary values according to your requirements (please refer to [Configuration Steps](#configuration-steps)). \
+During the CDK deployment process, these configuration files from the `/config/settings` directory will be uploaded to the S3 bucket automatically. If any modifications are made to the configuration files locally, you would need to redeploy stacks. \
+**Note:** Always ensure that the settings you utilize are up-to-date.
+
 
 ## Configuration Files
 
@@ -155,7 +179,8 @@ The `recipients.json` file specifies recipients for alerts and digests, along wi
 - in the `digest`, enter an interval (in minutes) for extracting metrics from monitored environments. \
 
 ### 5. Provide Replacements for Rlaceholders (optional) <a name="provide-replacements-for-placeholders"></a> 
-The general configuration file sets up the tooling environment, monitored environments, and delivery methods.
+Replacements list for placeholders in other setting JSON files. Placeholders inside general and other settings should be in double curly brackets (e.g. <<value>>)
+
 ```json
 {
     "<<env>>": "dev",
