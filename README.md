@@ -31,8 +31,8 @@ project_root/
         ├── recipients.json
         └── replacements.json
 ```
-In the `sample_settings` directory, you will find sample configurations that you can use as templates. After copying them to the `settings` directory, fill in the necessary values according to your requirements (please refer to [Configuration Steps](#configuration-steps)). \
-During the CDK deployment process, these configuration files from the `/config/settings` directory will be uploaded to the S3 bucket `s3-salmon-settings-<<stage-name>>` automatically. \
+In the `/config/sample_settings` directory, you will find sample configurations that you can use as templates. After copying them to the `settings` directory, fill in the necessary values according to your requirements (please refer to [Configuration Steps](#configuration-steps)). \
+During the CDK deployment process, these configuration files from the `/config/settings` directory will be uploaded to the S3 bucket `s3-salmon-settings-<<stage-name>>` automatically and later used by the SALMON project. \
 **Note:** If any modifications are made to the configuration files locally, you would need to redeploy the stacks in order to apply the changes (please refer to [Deployment and installation](deployment.md) for more details).
 
 ## Configuration Files
@@ -92,25 +92,25 @@ The  `general.json` configuration file sets up the tooling environment, monitore
 **Note**: Here, `<<env>>` acts as a placeholder that represents the environment name. This allows you to specify a generic name for the tooling account while keeping the option to customize it based on the environment. To define the actual values for placeholders, you can use the `replacements.json` file (please refer to [Provide Replacements for Rlaceholders](#provide-replacements-for-placeholders)). This file serves as a mapping between placeholders and their corresponding values.
 - in the `account_id`, `region` parameters, enter AWS region and account ID for this Tolling environment.
 - in the `metrics_collection_interval_min`, enter an interval (in minutes) for extracting metrics from monitored environments.
-- in the `digest_report_period_hours`, indicate how many recent hours should be covered in the daily digest report. Defaults to `24` hours.
-- in the `digest_cron_expression`, enter the cron schedule to trigger the daily digest report. Defaults to `cron(0 8 * * ? *)`, every day at 8am UTC. \
+- in the `digest_report_period_hours`, indicate how many recent hours should be covered in the daily digest report. Default value: `24` hours.
+- in the `digest_cron_expression`, enter the cron schedule to trigger the daily digest report. Default value: `cron(0 8 * * ? *)`, every day at 8am UTC. \
 \
     **Grafana Configuration** [Optional]: \
     \
     Only if the `grafana_instance` section exists, the Grafana stack will be deployed. If the Grafana deployment should be skipped, remove this `grafana_instance` nested configuration from the general settings.\
     If the Grafana stack should be deployed:
     - in the `grafana_vpc_id`, specify the ID of the Amazon VPC where the Grafana instance will be deployed. At least 1 public subnet required.
-    - in the `grafana_security_group_id`, specify the ID of the security group that will be associated with the Grafana instance. Inbound access to Grafana’s default HTTP port: 3000 required. \
+    - in the `grafana_security_group_id`, specify the ID of the security group that will be associated with the Grafana instance. Inbound access to Grafana’s default HTTP port: 3000 required. 
 
     Additionally, several optional configurations are available to customize the Grafana deployment: 
     - `grafana_key_pair_name`: add this parameter and specify the name of the key pair to be associated with the Grafana instance. If not provided, a new key pair will be created during the stack deployment.
-    - `grafana_bitnami_image`: add this parameter and specify the Bitnami Grafana image from AWS Marketplace. Defaults to `bitnami-grafana-10.2.2-1-r02-linux-debian-11-x86_64-hvm-ebs-nami`.
-    - `grafana_instance_type`: add this parameter and specify the EC2 instance type for the Grafana instance. Defaults to `t3.micro`.
+    - `grafana_bitnami_image`: add this parameter and specify the Bitnami Grafana image from AWS Marketplace. Default value: `bitnami-grafana-10.2.2-1-r02-linux-debian-11-x86_64-hvm-ebs-nami`.
+    - `grafana_instance_type`: add this parameter and specify the EC2 instance type for the Grafana instance. Default value: `t3.micro`.
 
 **Monitored Environments Configuration**:
 - in the `name` parameter, enter the name of your Monitored environment. Refered in `monitoring_groups.json`.
 - in the `account_id`, `region` parameters, specify AWS region and account ID of the account to be monitored.
-- [Optional] in the `metrics_extractor_role_arn`, specify IAM Role ARN to extract metrics for the resources running in another AWS account. If not specified - a default one is used (`arn:aws:iam::{account_id}:role/role-salmon-cross-account-extract-metrics-dev`). \
+- [Optional] in the `metrics_extractor_role_arn`, specify IAM Role ARN to extract metrics for the resources running in another AWS account. Default value: `arn:aws:iam::{account_id}:role/role-salmon-cross-account-extract-metrics-dev`. \
 
 To add additional monitored environments, simply append another dictionary block with the same structure. 
 
@@ -122,7 +122,7 @@ To add additional monitored environments, simply append another dictionary block
 To add additional delivery method, simply append another dictionary block with the same structure.
 
 ### 3. Configure Monitoring Groups  <a name="configure-monitoring-groups"></a>
-The `monitoring_groups.json` configuration file lists all resources to be monitored, grouped logically. For example, all glue jobs and lambdas related to Data Ingestion Pipeline.
+The `monitoring_groups.json` configuration file lists all resources to be monitored, grouped logically. For example, all glue jobs and lambda functions can be related to Data Ingestion Pipeline.
 ```json
 {
     "monitoring_groups": [
@@ -148,16 +148,16 @@ The `monitoring_groups.json` configuration file lists all resources to be monito
 ```
 **Monitoring Groups Configuration**: \
 Inside each group we list group elements with their properties (such as `name`, `sla_seconds`, `minimum_number_of_runs`).
+- in the `group_name` parameter, specify the name of your monitoring pipeline (group).
 - the element `glue_jobs` should be adjusted in accordance with the monitoring resource type (e.g., `glue_jobs`, `step_functions`, `lambda_functions`, `glue_workflows`, `glue_catalogs`, `glue_crawlers`). 
 - in the `name` parameter, specify the resource name to be monitored (e.g., Glue Job name). \
 **Note**: If you would like to monitor the resources with the same prefix (e.g., glue-pipeline1-ingest, glue-pipeline1-cleanse, glue-pipeline1-staging), you can simply describe them using wildcards: `glue-pipeline1-*`.
-- in the `group_name` parameter, specify the name of your monitoring pipeline (group).
 - in the `monitored_environment_name` parameter, enter the name of your monitored environment (listed in the general settings).
-- [Optional] in the `sla_seconds`, specify SLA for the resource exeution time. If the execution time exceeds `sla_seconds`, such resource run will be marked with the `Warning` status in the Daily Digest and the comment that some runs haven't met SLA (=<<sla_seconds>> sec). If this parameter is not set or equals to 0 - the check is not applied during the Digest generation.
-- [Optional] in the `minimum_number_of_runs`, specify the least number of runs expected. If there have been less actual runs than expected, then such resource run will be marked with the `Warning` status and an additional comment will be shown in the Daily Digest. If this parameter is not set or equals to 0 - the check is not applied during the Digest generation.
+- [Optional] in the `sla_seconds`, specify the SLA for the resource execution time if applicable. If the execution time exceeds `sla_seconds`, such resource run will be marked with the `Warning` status and the comment that some runs haven't met SLA (=<<sla_seconds>> sec) will be included in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
+- [Optional] in the `minimum_number_of_runs`, specify the least number of runs expected if applicable. In this case if there have been less actual runs than expected, then such resource run will be marked with the `Warning` status and an additional comment will be shown in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
 
 ### 4. Specify Recipients and Subscriptions  <a name="specify-recipients-and-subscriptions"></a> 
-The `recipients.json` file specifies recipients for alerts and digests, along with their subscriptions to monitoring groups.
+The `recipients.json` file specifies recipients for alerts and digests, along with their subscriptions to the monitoring groups.
 ```json
 {
     "recipients": [
@@ -180,7 +180,7 @@ The `recipients.json` file specifies recipients for alerts and digests, along wi
 **Note**: e-mail address must be verified in AWS SES.
 - in the `delivery_method` parameter, enter the delivery method name (specified in the general settings).
 - in the `monitoring_group` parameter, enter the monitoring group name (specified in the monitoring groups settings).
-- in the `alerts`, indicate whether this recipient would like to receive alerts on failed runs(true/false).
+- in the `alerts`, indicate whether this recipient would like to receive notifications on failed runs (true/false).
 - in the `digest`, indicate whether this recipient would like to receive Daily Digest (true/false).
 
 ### 5. [Optional] Provide Replacements for Rlaceholders <a name="provide-replacements-for-placeholders"></a> 
