@@ -1,6 +1,19 @@
 # Project Configuration
+
+# Table of Contents
+* [Overview](#overview)
+* [Configuration Files](#configuration-files)
+* [Configuration Steps](#configuration-steps)
+    1. [Copy Configuration Samples](#copy-configuration-samples)
+    2. [Provide General Settings](#provide-general-settings)
+    3. [Configure Monitoring Groups](#configure-monitoring-groups)
+    4. [Specify Recipients and Subscriptions ](#specify-recipients-and-subscriptions)
+    5. [Provide Replacements for Rlaceholders (optional)](#provide-replacements-for-placeholders-(optional))
+
+
 ## Overview
 This guide provides instructions on how to configure the SALMON project to suit your monitoring and alerting needs.
+During the CDK deployment process, these configuration files from the /config/settings directory will be uploaded to the S3 bucket automatically.
 
 ## Configuration Files
 
@@ -17,7 +30,10 @@ The project utilizes the following configuration files:
 
 Follow these steps to configure the project according to your requirements:
 
-#### 1. Provide General settings
+### 1. Copy Configuration Samples <a name="copy-configuration-samples"></a>
+Navigate to the `/config/sample_settings` directory and copy the sample configuration files (`general.json`, `monitoring_groups.json`, `recipients.json`, and `replacements.json` if needed) to the `/config/settings` directory.
+
+#### 2. Provide General Settings
 The  `general.json` configuration file sets up the tooling environment, monitored environments, and delivery methods.
 ```json
 {
@@ -52,8 +68,7 @@ The  `general.json` configuration file sets up the tooling environment, monitore
 ```     
 **Tooling Environment Configuration**:
 - in the `name` parameter, enter the name of your Tolling environment where SALMON monitoring and alerting infrastructure will be located.
-- in the `account_id` parameter, enter the ID of your AWS account.
-- in the `region` parameter, enter the region name of your AWS account.
+- in the `account_id`, `region` parameters, enter AWS region and account ID for this Tolling environment.
 - in the `metrics_collection_interval_min`, enter an interval (in minutes) for extracting metrics from monitored environments.
 - in the `digest_report_period_hours`, indicate how many recent hours should be covered in the daily digest report. Defaults to `24` hours.
 - in the `digest_cron_expression`, enter the cron schedule to trigger the daily digest report. Defaults to `cron(0 8 * * ? *)`, every day at 8am UTC. \
@@ -63,7 +78,7 @@ The  `general.json` configuration file sets up the tooling environment, monitore
     If the Grafana stack should be deployed:
     - in the `grafana_vpc_id`, specify the ID of the Amazon VPC where the Grafana instance will be deployed. At least 1 public subnet required.
     - in the `grafana_security_group_id`, specify the ID of the security group that will be associated with the Grafana instance. Inbound access to Grafana’s default HTTP port: 3000 required. \
-    Additionally, several optional configurations are available to customize the Grafana deployment: 
+Additionally, several optional configurations are available to customize the Grafana deployment: 
     - `grafana_key_pair_name`: add this parameter and specify the name of the key pair to be associated with the Grafana instance. If not provided, a new key pair will be created during the stack deployment.
     - `grafana_bitnami_image`: add this parameter and specify the Bitnami Grafana image from AWS Marketplace. Defaults to `bitnami-grafana-10.2.2-1-r02-linux-debian-11-x86_64-hvm-ebs-nami`.
     - `grafana_instance_type`: add this parameter and specify the EC2 instance type for the Grafana instance. Defaults to `t3.micro`.
@@ -72,15 +87,15 @@ The  `general.json` configuration file sets up the tooling environment, monitore
 - in the `name` parameter, enter the name of your Monitored environment. Refered in items in monitoring_groups.json.
 - in the `account_id`, `region` parameters, specify AWS region and account ID of your Monitored account. Refers to AWS Account and Region to be monitored.
 - in the `metrics_extractor_role_arn` (optional), specify IAM Role Arn to get access for metrics extraction. If not specified - a default one is used (arn:aws:iam::{account_id}:role/role-salmon-cross-account-extract-metrics-dev). \
-Several Monitored accounts can be specified here. Add new dictionary with the same parameters for each  Monitored account.
+To add additional monitored environments, simply append another dictionary block with the same structure. \
 
 **Delivery Methods Configuration**:
 - in the `name` parameter, enter the name of your delivery method.
 - in the `delivery_method_type` parameter, enter a delivery method type (AWS_SES, SMTP).
 - in the `sender_email` parameter, enter the sender email for notifications and digests.
-Several Delivery methods can be specified here. Add new dictionary with the same parameters for each delivery method type.
+To add additional delivery method, simply append another dictionary block with the same structure. \
 
-#### 2. Configure Monitoring Groups
+#### 3. Configure Monitoring Groups
 The `monitoring_groups.json` configuration file defines groups of Glue jobs along with their SLA settings.
 ```json
 {
@@ -113,7 +128,7 @@ The `monitoring_groups.json` configuration file defines groups of Glue jobs alon
 - in the `sla_seconds`, enter an interval (in minutes) for extracting metrics from monitored environments.
 - in the `minimum_number_of_runs`, enter an interval (in minutes) for extracting metrics from monitored environments. \
 
-#### 3. Specify Recipients and Subscriptions 
+#### 4. Specify Recipients and Subscriptions 
 The `recipients.json` file specifies recipients for alerts and digests, along with their subscriptions to monitoring groups.
 ```json
 {
@@ -134,12 +149,12 @@ The `recipients.json` file specifies recipients for alerts and digests, along wi
 ```
 **Recipients Configuration**:
 - in the `recipient` parameter, enter the ID of your management account.
-- in the `delivery_method` parameter, enter the ID of your management account.
+- in the `delivery_method` parameter, specify the delivery method name.
 - in the `monitoring_group` parameter, enter the ID of your management account.
 - in the `alerts`, enter an interval (in minutes) for extracting metrics from monitored environments.
 - in the `digest`, enter an interval (in minutes) for extracting metrics from monitored environments. \
 
-#### 4. Modify `replacements.json` configuration file.
+#### 5. Provide Replacements for Rlaceholders (optional)
 The general configuration file sets up the tooling environment, monitored environments, and delivery methods.
 ```json
 {
