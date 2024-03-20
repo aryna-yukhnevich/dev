@@ -101,7 +101,8 @@ The  `general.json` configuration file sets up the tooling environment, monitore
     If the Grafana stack should be deployed:
     - in the `grafana_vpc_id`, specify the ID of the Amazon VPC where the Grafana instance will be deployed. At least 1 public subnet required.
     - in the `grafana_security_group_id`, specify the ID of the security group that will be associated with the Grafana instance. Inbound access to Grafana’s default HTTP port: 3000 required. \
-Additionally, several optional configurations are available to customize the Grafana deployment: 
+
+    Additionally, several optional configurations are available to customize the Grafana deployment: 
     - `grafana_key_pair_name`: add this parameter and specify the name of the key pair to be associated with the Grafana instance. If not provided, a new key pair will be created during the stack deployment.
     - `grafana_bitnami_image`: add this parameter and specify the Bitnami Grafana image from AWS Marketplace. Defaults to `bitnami-grafana-10.2.2-1-r02-linux-debian-11-x86_64-hvm-ebs-nami`.
     - `grafana_instance_type`: add this parameter and specify the EC2 instance type for the Grafana instance. Defaults to `t3.micro`.
@@ -109,13 +110,15 @@ Additionally, several optional configurations are available to customize the Gra
 **Monitored Environments Configuration**:
 - in the `name` parameter, enter the name of your Monitored environment. Refered in `monitoring_groups.json`.
 - in the `account_id`, `region` parameters, specify AWS region and account ID of the account to be monitored.
-- in the `metrics_extractor_role_arn` [Optional], specify IAM Role ARN to extract metrics for the resources running in another AWS account. If not specified - a default one is used (`arn:aws:iam::{account_id}:role/role-salmon-cross-account-extract-metrics-dev`). \
+- [Optional] in the `metrics_extractor_role_arn`, specify IAM Role ARN to extract metrics for the resources running in another AWS account. If not specified - a default one is used (`arn:aws:iam::{account_id}:role/role-salmon-cross-account-extract-metrics-dev`). \
+
 To add additional monitored environments, simply append another dictionary block with the same structure. 
 
 **Delivery Methods Configuration**:
 - in the `name` parameter, enter the name of your delivery method.
 - in the `delivery_method_type` parameter, enter a delivery method type (AWS_SES, SMTP).
 - in the `sender_email` parameter, enter the sender email for notifications and digests.
+
 To add additional delivery method, simply append another dictionary block with the same structure.
 
 ### 3. Configure Monitoring Groups  <a name="configure-monitoring-groups"></a>
@@ -144,13 +147,14 @@ The `monitoring_groups.json` configuration file lists all resources to be monito
 }
 ```
 **Monitoring Groups Configuration**: \
-Inside group we list group elements with their properties. Properties list depends on the element type (e.g. Glue Job can have properies such as `name`, `sla_seconds`, `minimum_number_of_runs`). If you would like to monitor the resources with the same prefix (e.g., glue-pipeline1-ingest, glue-pipeline1-cleanse, glue-pipeline1-staging), you can simply describe those using wildcards: `glue-pipeline1-*`.
-- in the `group_name` parameter, specify the name of your monitoring pipeline (group).
+Inside each group we list group elements with their properties (such as `name`, `sla_seconds`, `minimum_number_of_runs`).
 - the element `glue_jobs` should be adjusted in accordance with the monitoring resource type (e.g., `glue_jobs`, `step_functions`, `lambda_functions`, `glue_workflows`, `glue_catalogs`, `glue_crawlers`). 
-- in the `name` parameter, specify the resource name to be monitored (e.g., Glue Job name).
+- in the `name` parameter, specify the resource name to be monitored (e.g., Glue Job name). \
+**Note**: If you would like to monitor the resources with the same prefix (e.g., glue-pipeline1-ingest, glue-pipeline1-cleanse, glue-pipeline1-staging), you can simply describe them using wildcards: `glue-pipeline1-*`.
+- in the `group_name` parameter, specify the name of your monitoring pipeline (group).
 - in the `monitored_environment_name` parameter, enter the name of your monitored environment (listed in the general settings).
-- in the `sla_seconds`, enter If execution time exceeds "sla_seconds", run will be counted as "sla miss" in report. If omitted or equals to 0 - not checked.
-- in the `minimum_number_of_runs`, enter Least number of runs expected. If it's less, then comments is shown in report and job is marked as problematic. If omitted or equals to 0 - not checked. 
+- [Optional] in the `sla_seconds`, specify SLA for the resource exeution time. If the execution time exceeds `sla_seconds`, such resource run will be marked with the `Warning` status in the Daily Digest and the comment that some runs haven't met SLA (=<<sla_seconds>> sec). If this parameter is not set or equals to 0 - the check is not applied during the Digest generation.
+- [Optional] in the `minimum_number_of_runs`, specify the least number of runs expected. If there have been less actual runs than expected, then such resource run will be marked with the `Warning` status and an additional comment will be shown in the Daily Digest. If this parameter is not set or equals to 0 - the check is not applied during the Digest generation.
 
 ### 4. Specify Recipients and Subscriptions  <a name="specify-recipients-and-subscriptions"></a> 
 The `recipients.json` file specifies recipients for alerts and digests, along with their subscriptions to monitoring groups.
@@ -172,12 +176,12 @@ The `recipients.json` file specifies recipients for alerts and digests, along wi
 }
 ```
 **Recipients Configuration**:
-- in the `recipient` parameter, enter an e-mail address of a person / delivery list to receive glue job failure notifications or daily digest reports.   
+- in the `recipient` parameter, enter an e-mail address of a person / delivery list to receive failure notifications or Daily Digest reports.   
 **Note**: e-mail address must be verified in AWS SES.
-- in the `delivery_method` parameter, specify the delivery method name.
-- in the `monitoring_group` parameter, enter the ID of your management account.
-- in the `alerts`, enter whether recipient wants to receive e-mail on glue job failure (true/false)
-- in the `digest`, subscription flag for daily digest (true/false)
+- in the `delivery_method` parameter, enter the delivery method name (specified in the general settings).
+- in the `monitoring_group` parameter, enter the monitoring group name (specified in the monitoring groups settings).
+- in the `alerts`, indicate whether this recipient would like to receive alerts on failed runs(true/false).
+- in the `digest`, indicate whether this recipient would like to receive Daily Digest (true/false).
 
 ### 5. [Optional] Provide Replacements for Rlaceholders <a name="provide-replacements-for-placeholders"></a> 
 The `replacements.json` file provides replacements list for placeholders in other setting JSON files. Placeholders inside general and other settings should be in double curly brackets (e.g. `<<value>>`). For example, we defined the value for `<<env>>` as `dev`. This means that during the deployment, wherever the `<<env>>` placeholder is used, it will be replaced with `dev`.
