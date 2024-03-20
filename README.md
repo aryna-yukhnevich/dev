@@ -1,6 +1,6 @@
-# Project Configuration
+# SALMON Configuration
 
-# Table of Contents
+## Table of Contents
 * [Overview](#overview)
 * [Configuration Files](#configuration-files)
 * [Configuration Steps](#configuration-steps)
