@@ -97,7 +97,17 @@ The  `general.json` configuration file sets up the tooling environment, monitore
 \
     **Grafana Configuration** [Optional]: \
     \
-    Only if the `grafana_instance` section exists, the Grafana stack will be deployed. If the Grafana deployment should be skipped, remove this `grafana_instance` nested configuration from the general settings.\
+    Only if the `grafana_instance` section exists, the Grafana stack will be deployed. 
+    If the Grafana stack should be deployed:
+    - `grafana_vpc_id` - specify the ID of the Amazon VPC where the Grafana instance will be deployed. At least 1 public subnet required.
+    - `grafana_security_group_id` - specify the ID of the security group that will be associated with the Grafana instance. Inbound access to Grafana’s default HTTP port: 3000 required. 
+
+    Additionally, several optional configurations are available to customize the Grafana deployment: 
+    - `grafana_key_pair_name`: add this parameter and specify the name of the key pair to be associated with the Grafana instance. If not provided, a new key pair will be created during the stack deployment.
+    - `grafana_bitnami_image`: add this parameter and specify the Bitnami Grafana image from AWS Marketplace. Default value: `bitnami-grafana-10.2.2-1-r02-linux-debian-11-x86_64-hvm-ebs-nami`.
+    - `grafana_instance_type`: add this parameter and specify the EC2 instance type for the Grafana instance. Default value: `t3.micro`.
+
+    If the Grafana deployment should be skipped, remove this `grafana_instance` nested configuration from the general settings, like shown below:
     ```json
     {
         "tooling_environment": {
@@ -125,14 +135,6 @@ The  `general.json` configuration file sets up the tooling environment, monitore
         ]
     }
     ``` 
-    If the Grafana stack should be deployed:
-    - `grafana_vpc_id` - specify the ID of the Amazon VPC where the Grafana instance will be deployed. At least 1 public subnet required.
-    - `grafana_security_group_id` - specify the ID of the security group that will be associated with the Grafana instance. Inbound access to Grafana’s default HTTP port: 3000 required. 
-
-    Additionally, several optional configurations are available to customize the Grafana deployment: 
-    - `grafana_key_pair_name`: add this parameter and specify the name of the key pair to be associated with the Grafana instance. If not provided, a new key pair will be created during the stack deployment.
-    - `grafana_bitnami_image`: add this parameter and specify the Bitnami Grafana image from AWS Marketplace. Default value: `bitnami-grafana-10.2.2-1-r02-linux-debian-11-x86_64-hvm-ebs-nami`.
-    - `grafana_instance_type`: add this parameter and specify the EC2 instance type for the Grafana instance. Default value: `t3.micro`.
 
 **Monitored Environments Configuration**:
 - `name` - the name of your Monitored environment. Refered in `monitoring_groups.json`.
