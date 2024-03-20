@@ -4,7 +4,7 @@
 * [Overview](#overview)
 * [Configuration Files](#configuration-files)
 * [Configuration Steps](#configuration-steps)
-    1. [Copy Configuration Samples](#copy-configuration-samples)
+    [1. Copy Configuration Samples](#copy-configuration-samples)
     2. [Provide General Settings](#provide-general-settings)
     3. [Configure Monitoring Groups](#configure-monitoring-groups)
     4. [Specify Recipients and Subscriptions ](#specify-recipients-and-subscriptions)
