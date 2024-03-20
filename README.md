@@ -33,7 +33,7 @@ project_root/
 ```
 In the `sample_settings` directory, you will find sample configurations that you can use as templates. After copying them to the `settings` directory, fill in the necessary values according to your requirements (please refer to [Configuration Steps](#configuration-steps)). \
 During the CDK deployment process, these configuration files from the `/config/settings` directory will be uploaded to the S3 bucket `s3-salmon-settings-<<stage-name>>` automatically. \
-**Note:** If any modifications are made to the configuration files locally, you would need to redeploy the stacks in order to apply the changes (please refer to [Deployment and installation](#https://github.com/Soname-Solutions/salmon/blob/dev/docs/deployment.md) for more details).
+**Note:** If any modifications are made to the configuration files locally, you would need to redeploy the stacks in order to apply the changes (please refer to [Deployment and installation](deployment.md) for more details).
 
 ## Configuration Files
 
