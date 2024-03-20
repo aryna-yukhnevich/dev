@@ -51,8 +51,9 @@ The project utilizes the following configuration files:
 Follow these steps to configure the project according to your requirements:
 
 ### 1. Copy Configuration Samples <a name="copy-configuration-samples"></a>
-Navigate to the `/config/sample_settings` directory and copy the sample configuration files (`general.json`, `monitoring_groups.json`, `recipients.json`, and `replacements.json` if needed) to the `/config/settings` directory. \
-**Note:** Always ensure that the settings you utilize are up-to-date.
+- Navigate to the `/config/sample_settings` directory
+- Copy the sample configuration files (`general.json`, `monitoring_groups.json`, `recipients.json`, and `replacements.json` if needed) to the `/config/settings` directory.
+- **Note:** Always ensure that the settings you utilize are up-to-date.
 
 ### 2. Provide General Settings  <a name="provide-general-settings"></a>
 The  `general.json` configuration file sets up the tooling environment, monitored environments, and delivery methods.
@@ -144,8 +145,8 @@ The  `general.json` configuration file sets up the tooling environment, monitore
 To add additional monitored environments, simply append another dictionary block with the same structure. 
 
 **Delivery Methods Configuration**:
-- `name` - the name of your delivery method.
-- `delivery_method_type` - a delivery method type (AWS_SES, SMTP).
+- `name` - the name of your delivery method. Refered in `recipients.json`.
+- `delivery_method_type` - the delivery method type (AWS_SES, SMTP).
 - `sender_email` - the sender email for notifications and digests.
 
 To add additional delivery method, simply append another dictionary block with the same structure.
@@ -182,7 +183,7 @@ Inside each group we list group elements with their properties (such as `name`, 
 - `name` - specify the resource name to be monitored. \
 **Note**: If you would like to monitor the resources with the same prefix (e.g., glue-pipeline1-ingest, glue-pipeline1-cleanse, glue-pipeline1-staging), you can simply describe them using wildcards: `glue-pipeline1-*`.
 - `monitored_environment_name` - the name of your monitored environment (listed in the general settings).
-- [Optional] `sla_seconds` - specify the SLA for the resource execution time if applicable. If the execution time exceeds `sla_seconds`, such resource run will be marked with the `Warning` status and the comment that some runs haven't met SLA (=<<sla_seconds>> sec) will be included in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
+- [Optional] `sla_seconds` - specify the SLA for the resource execution time if applicable. If the execution time exceeds `sla_seconds`, such resource run will be marked with the `Warning` status and the comment that some runs haven't met SLA (=<<sla_seconds>> sec) will be shown in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
 - [Optional] `minimum_number_of_runs` - specify the least number of runs expected if applicable. In this case if there have been less actual runs than expected, then such resource run will be marked with the `Warning` status and an additional comment will be shown in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
 
 ### 4. Specify Recipients and Subscriptions  <a name="specify-recipients-and-subscriptions"></a> 
