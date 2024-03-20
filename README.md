@@ -98,6 +98,33 @@ The  `general.json` configuration file sets up the tooling environment, monitore
     **Grafana Configuration** [Optional]: \
     \
     Only if the `grafana_instance` section exists, the Grafana stack will be deployed. If the Grafana deployment should be skipped, remove this `grafana_instance` nested configuration from the general settings.\
+    ```json
+    {
+        "tooling_environment": {
+            "name": "Tooling Account [<<env>>]",
+            "account_id": "<<tooling_account_id>>",
+            "region": "eu-central-1",
+            "metrics_collection_interval_min": 5,
+            "digest_report_period_hours" : 24, 
+            "digest_cron_expression": "cron(0 8 * * ? *)"
+        },
+        "monitored_environments": [
+            {
+                "name": "Dept1 Account [<<env>>]",
+                "account_id": "123456789",
+                "region": "eu-central-1",
+                "metrics_extractor_role_arn": "arn:aws:iam::123456789:role/role-salmon-cross-account-extract-metrics-dev"
+            }
+        ],
+        "delivery_methods": [
+            {
+                "name": "aws_ses",
+                "delivery_method_type": "AWS_SES",
+                "sender_email" : "<<sender_email>>"
+            }
+        ]
+    }
+    ``` 
     If the Grafana stack should be deployed:
     - `grafana_vpc_id` - specify the ID of the Amazon VPC where the Grafana instance will be deployed. At least 1 public subnet required.
     - `grafana_security_group_id` - specify the ID of the security group that will be associated with the Grafana instance. Inbound access to Grafana’s default HTTP port: 3000 required. 
