@@ -4,11 +4,11 @@
 * [Overview](#overview)
 * [Configuration Files](#configuration-files)
 * [Configuration Steps](#configuration-steps)
-    * [1. Copy Configuration Samples](#copy-configuration-samples)
+    1. [Copy Configuration Samples](#copy-configuration-samples)
     2. [Provide General Settings](#provide-general-settings)
     3. [Configure Monitoring Groups](#configure-monitoring-groups)
     4. [Specify Recipients and Subscriptions ](#specify-recipients-and-subscriptions)
-    5. [Provide Replacements for Rlaceholders (optional)](#provide-replacements-for-placeholders-(optional))
+    5. [Provide Replacements for Rlaceholders (optional)](#provide-replacements-for-placeholders)
 
 
 ## Overview
@@ -33,7 +33,7 @@ Follow these steps to configure the project according to your requirements:
 ### 1. Copy Configuration Samples <a name="copy-configuration-samples"></a>
 Navigate to the `/config/sample_settings` directory and copy the sample configuration files (`general.json`, `monitoring_groups.json`, `recipients.json`, and `replacements.json` if needed) to the `/config/settings` directory.
 
-#### 2. Provide General Settings
+### 2. Provide General Settings  <a name="provide-general-settings"></a>
 The  `general.json` configuration file sets up the tooling environment, monitored environments, and delivery methods.
 ```json
 {
@@ -95,7 +95,7 @@ To add additional monitored environments, simply append another dictionary block
 - in the `sender_email` parameter, enter the sender email for notifications and digests.
 To add additional delivery method, simply append another dictionary block with the same structure. \
 
-#### 3. Configure Monitoring Groups
+### 3. Configure Monitoring Groups  <a name="configure-monitoring-groups"></a>
 The `monitoring_groups.json` configuration file defines groups of Glue jobs along with their SLA settings.
 ```json
 {
@@ -128,7 +128,7 @@ The `monitoring_groups.json` configuration file defines groups of Glue jobs alon
 - in the `sla_seconds`, enter an interval (in minutes) for extracting metrics from monitored environments.
 - in the `minimum_number_of_runs`, enter an interval (in minutes) for extracting metrics from monitored environments. \
 
-#### 4. Specify Recipients and Subscriptions 
+### 4. Specify Recipients and Subscriptions  <a name="specify-recipients-and-subscriptions"></a> 
 The `recipients.json` file specifies recipients for alerts and digests, along with their subscriptions to monitoring groups.
 ```json
 {
@@ -154,7 +154,7 @@ The `recipients.json` file specifies recipients for alerts and digests, along wi
 - in the `alerts`, enter an interval (in minutes) for extracting metrics from monitored environments.
 - in the `digest`, enter an interval (in minutes) for extracting metrics from monitored environments. \
 
-#### 5. Provide Replacements for Rlaceholders (optional)
+### 5. Provide Replacements for Rlaceholders (optional) <a name="provide-replacements-for-placeholders"></a> 
 The general configuration file sets up the tooling environment, monitored environments, and delivery methods.
 ```json
 {
