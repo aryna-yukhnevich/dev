@@ -32,8 +32,8 @@ project_root/
         └── replacements.json
 ```
 In the `/config/sample_settings` directory, you will find sample configurations that you can use as templates. After copying them to the `settings` directory, fill in the necessary values according to your requirements (please refer to [Configuration Steps](#configuration-steps)). \
-During the CDK deployment process, these configuration files from the `/config/settings` directory will be uploaded to the S3 bucket `s3-salmon-settings-<<stage-name>>` automatically and later used by the SALMON project. \
-**Note:** If any modifications are made to the configuration files locally, you would need to redeploy the stacks in order to apply the changes (please refer to [Deployment and installation](deployment.md) for more details).
+During the CDK deployment process, these configuration files from the `/config/settings` directory will be uploaded to the S3 bucket `s3-salmon-settings-<<stage-name>>` automatically. Within the SALMON CDK project, the settings files are retrieved and read using the S3 bucket path. \
+**Note:** If any modifications are made to the configuration files locally, you would need to redeploy the stacks in order to apply the changes in the S3 bucket (please refer to [Deployment and installation](deployment.md) for more details).
 
 ## Configuration Files
 
@@ -88,19 +88,19 @@ The  `general.json` configuration file sets up the tooling environment, monitore
 }
 ```     
 **Tooling Environment Configuration**:
-- in the `name` parameter, enter the name of your Tolling environment where SALMON monitoring and alerting infrastructure will be located. \
+- `name` - the name of your Tolling environment where SALMON monitoring and alerting infrastructure will be located. \
 **Note**: Here, `<<env>>` acts as a placeholder that represents the environment name. This allows you to specify a generic name for the tooling account while keeping the option to customize it based on the environment. To define the actual values for placeholders, you can use the `replacements.json` file (please refer to [Provide Replacements for Rlaceholders](#provide-replacements-for-placeholders)). This file serves as a mapping between placeholders and their corresponding values.
-- in the `account_id`, `region` parameters, enter AWS region and account ID for this Tolling environment.
-- in the `metrics_collection_interval_min`, enter an interval (in minutes) for extracting metrics from monitored environments.
-- in the `digest_report_period_hours`, indicate how many recent hours should be covered in the daily digest report. Default value: `24` hours.
-- in the `digest_cron_expression`, enter the cron schedule to trigger the daily digest report. Default value: `cron(0 8 * * ? *)`, every day at 8am UTC. \
+- `account_id`, `region` - AWS region and account ID for this Tolling environment.
+- `metrics_collection_interval_min` - an interval (in minutes) for extracting metrics from monitored environments.
+- `digest_report_period_hours` - how many recent hours should be covered in the daily digest report. Default value: `24` hours.
+- `digest_cron_expression` - the cron schedule to trigger the daily digest report. Default value: `cron(0 8 * * ? *)`, every day at 8am UTC. \
 \
     **Grafana Configuration** [Optional]: \
     \
     Only if the `grafana_instance` section exists, the Grafana stack will be deployed. If the Grafana deployment should be skipped, remove this `grafana_instance` nested configuration from the general settings.\
     If the Grafana stack should be deployed:
-    - in the `grafana_vpc_id`, specify the ID of the Amazon VPC where the Grafana instance will be deployed. At least 1 public subnet required.
-    - in the `grafana_security_group_id`, specify the ID of the security group that will be associated with the Grafana instance. Inbound access to Grafana’s default HTTP port: 3000 required. 
+    - `grafana_vpc_id` - specify the ID of the Amazon VPC where the Grafana instance will be deployed. At least 1 public subnet required.
+    - `grafana_security_group_id` - specify the ID of the security group that will be associated with the Grafana instance. Inbound access to Grafana’s default HTTP port: 3000 required. 
 
     Additionally, several optional configurations are available to customize the Grafana deployment: 
     - `grafana_key_pair_name`: add this parameter and specify the name of the key pair to be associated with the Grafana instance. If not provided, a new key pair will be created during the stack deployment.
@@ -108,16 +108,16 @@ The  `general.json` configuration file sets up the tooling environment, monitore
     - `grafana_instance_type`: add this parameter and specify the EC2 instance type for the Grafana instance. Default value: `t3.micro`.
 
 **Monitored Environments Configuration**:
-- in the `name` parameter, enter the name of your Monitored environment. Refered in `monitoring_groups.json`.
-- in the `account_id`, `region` parameters, specify AWS region and account ID of the account to be monitored.
-- [Optional] in the `metrics_extractor_role_arn`, specify IAM Role ARN to extract metrics for the resources running in another AWS account. Default value: `arn:aws:iam::{account_id}:role/role-salmon-cross-account-extract-metrics-dev`. \
+- `name` - the name of your Monitored environment. Refered in `monitoring_groups.json`.
+- `account_id`, `region` - AWS region and account ID of the account to be monitored.
+- [Optional] `metrics_extractor_role_arn` - IAM Role ARN to extract metrics for the resources running in another AWS account. Default value: `arn:aws:iam::{account_id}:role/role-salmon-cross-account-extract-metrics-dev`. \
 
 To add additional monitored environments, simply append another dictionary block with the same structure. 
 
 **Delivery Methods Configuration**:
-- in the `name` parameter, enter the name of your delivery method.
-- in the `delivery_method_type` parameter, enter a delivery method type (AWS_SES, SMTP).
-- in the `sender_email` parameter, enter the sender email for notifications and digests.
+- `name` - the name of your delivery method.
+- `delivery_method_type` - a delivery method type (AWS_SES, SMTP).
+- `sender_email` - the sender email for notifications and digests.
 
 To add additional delivery method, simply append another dictionary block with the same structure.
 
@@ -148,13 +148,13 @@ The `monitoring_groups.json` configuration file lists all resources to be monito
 ```
 **Monitoring Groups Configuration**: \
 Inside each group we list group elements with their properties (such as `name`, `sla_seconds`, `minimum_number_of_runs`).
-- in the `group_name` parameter, specify the name of your monitoring pipeline (group).
+- `group_name` - the name of your monitoring pipeline.
 - the element `glue_jobs` should be adjusted in accordance with the monitoring resource type (e.g., `glue_jobs`, `step_functions`, `lambda_functions`, `glue_workflows`, `glue_catalogs`, `glue_crawlers`). 
-- in the `name` parameter, specify the resource name to be monitored (e.g., Glue Job name). \
+- `name` - specify the resource name to be monitored. \
 **Note**: If you would like to monitor the resources with the same prefix (e.g., glue-pipeline1-ingest, glue-pipeline1-cleanse, glue-pipeline1-staging), you can simply describe them using wildcards: `glue-pipeline1-*`.
-- in the `monitored_environment_name` parameter, enter the name of your monitored environment (listed in the general settings).
-- [Optional] in the `sla_seconds`, specify the SLA for the resource execution time if applicable. If the execution time exceeds `sla_seconds`, such resource run will be marked with the `Warning` status and the comment that some runs haven't met SLA (=<<sla_seconds>> sec) will be included in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
-- [Optional] in the `minimum_number_of_runs`, specify the least number of runs expected if applicable. In this case if there have been less actual runs than expected, then such resource run will be marked with the `Warning` status and an additional comment will be shown in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
+- `monitored_environment_name` - the name of your monitored environment (listed in the general settings).
+- [Optional] `sla_seconds` - specify the SLA for the resource execution time if applicable. If the execution time exceeds `sla_seconds`, such resource run will be marked with the `Warning` status and the comment that some runs haven't met SLA (=<<sla_seconds>> sec) will be included in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
+- [Optional] `minimum_number_of_runs` - specify the least number of runs expected if applicable. In this case if there have been less actual runs than expected, then such resource run will be marked with the `Warning` status and an additional comment will be shown in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
 
 ### 4. Specify Recipients and Subscriptions  <a name="specify-recipients-and-subscriptions"></a> 
 The `recipients.json` file specifies recipients for alerts and digests, along with their subscriptions to the monitoring groups.
@@ -162,8 +162,8 @@ The `recipients.json` file specifies recipients for alerts and digests, along wi
 {
     "recipients": [
         {
-            "recipient": "vasilii_pupkin@salmon.com",
-            "delivery_method": "local_smtp",            
+            "recipient": "dl-project-admins@salmon.com",
+            "delivery_method": "aws_ses",            
             "subscriptions": [
                 {
                     "monitoring_group": "pipeline_source1",
@@ -176,12 +176,12 @@ The `recipients.json` file specifies recipients for alerts and digests, along wi
 }
 ```
 **Recipients Configuration**:
-- in the `recipient` parameter, enter an e-mail address of a person / delivery list to receive failure notifications or Daily Digest reports.   
+- `recipient` - an e-mail address of a person / delivery list to receive failure notifications or Daily Digest reports.   
 **Note**: e-mail address must be verified in AWS SES.
-- in the `delivery_method` parameter, enter the delivery method name (specified in the general settings).
-- in the `monitoring_group` parameter, enter the monitoring group name (specified in the monitoring groups settings).
-- in the `alerts`, indicate whether this recipient would like to receive notifications on failed runs (true/false).
-- in the `digest`, indicate whether this recipient would like to receive Daily Digest (true/false).
+- `delivery_method` - the delivery method name (specified in the general settings).
+- `monitoring_group` - the monitoring group name (specified in the monitoring groups settings).
+- `alerts` - indicate whether this recipient would like to receive notifications on failed runs (true/false).
+- `digest` - indicate whether this recipient would like to receive Daily Digest (true/false).
 
 ### 5. [Optional] Provide Replacements for Rlaceholders <a name="provide-replacements-for-placeholders"></a> 
 The `replacements.json` file provides replacements list for placeholders in other setting JSON files. Placeholders inside general and other settings should be in double curly brackets (e.g. `<<value>>`). For example, we defined the value for `<<env>>` as `dev`. This means that during the deployment, wherever the `<<env>>` placeholder is used, it will be replaced with `dev`.
