@@ -35,8 +35,7 @@ project_root/
 └── replacements.json
 ```
 In the `sample_settings` directory, you will find sample configurations that you can use as a template. After copying them to the `settings` directory, fill in the necessary values according to your requirements (please refer to [Configuration Steps](#configuration-steps)). \
-During the CDK deployment process, these configuration files from the `/config/settings` directory will be uploaded to the S3 bucket automatically. If any modifications are made to the configuration files locally, you would need to redeploy stacks. \
-**Note:** Always ensure that the settings you utilize are up-to-date.
+During the CDK deployment process, these configuration files from the `/config/settings` directory will be uploaded to the S3 bucket automatically. If any modifications are made to the configuration files locally, you would need to redeploy the stacks in order to apply the changes. 
 
 
 ## Configuration Files
@@ -56,6 +55,7 @@ Follow these steps to configure the project according to your requirements:
 
 ### 1. Copy Configuration Samples <a name="copy-configuration-samples"></a>
 Navigate to the `/config/sample_settings` directory and copy the sample configuration files (`general.json`, `monitoring_groups.json`, `recipients.json`, and `replacements.json` if needed) to the `/config/settings` directory.
+**Note:** Always ensure that the settings you utilize are up-to-date.
 
 ### 2. Provide General Settings  <a name="provide-general-settings"></a>
 The  `general.json` configuration file sets up the tooling environment, monitored environments, and delivery methods.
@@ -91,13 +91,13 @@ The  `general.json` configuration file sets up the tooling environment, monitore
 }
 ```     
 **Tooling Environment Configuration**:
-- in the `name` parameter, enter the name of your Tolling environment where SALMON monitoring and alerting infrastructure will be located.
+- in the `name` parameter, enter the name of your Tolling environment where SALMON monitoring and alerting infrastructure will be located. Here, `<<env>>` acts as a placeholder that represents the environment name. This allows you to specify a generic name for the tooling account while keeping the option to customize it based on the environment. To define the actual values for placeholders, you can use the `replacements.json` file (please refer to [Provide Replacements for Rlaceholders (optional)](#provide-replacements-for-placeholders)). This file serves as a mapping between placeholders and their corresponding values.
 - in the `account_id`, `region` parameters, enter AWS region and account ID for this Tolling environment.
 - in the `metrics_collection_interval_min`, enter an interval (in minutes) for extracting metrics from monitored environments.
 - in the `digest_report_period_hours`, indicate how many recent hours should be covered in the daily digest report. Defaults to `24` hours.
 - in the `digest_cron_expression`, enter the cron schedule to trigger the daily digest report. Defaults to `cron(0 8 * * ? *)`, every day at 8am UTC. \
 \
-    **Grafana Configuration** (optional): \
+    **Grafana Configuration** [Optional]: \
     Only if the `grafana_instance` section exists, the Grafana stack will be deployed. If the Grafana deployment should be skipped, remove this `grafana_instance` nested configuration from the general settings.\
     If the Grafana stack should be deployed:
     - in the `grafana_vpc_id`, specify the ID of the Amazon VPC where the Grafana instance will be deployed. At least 1 public subnet required.
@@ -110,7 +110,7 @@ Additionally, several optional configurations are available to customize the Gra
 **Monitored Environments Configuration**:
 - in the `name` parameter, enter the name of your Monitored environment. Refered in items in monitoring_groups.json.
 - in the `account_id`, `region` parameters, specify AWS region and account ID of your Monitored account. Refers to AWS Account and Region to be monitored.
-- in the `metrics_extractor_role_arn` (optional), specify IAM Role Arn to get access for metrics extraction. If not specified - a default one is used (arn:aws:iam::{account_id}:role/role-salmon-cross-account-extract-metrics-dev). \
+- in the `metrics_extractor_role_arn` [Optional], specify IAM Role Arn to get access for metrics extraction. If not specified - a default one is used (arn:aws:iam::{account_id}:role/role-salmon-cross-account-extract-metrics-dev).  For jobs running on another AWS account. The IAM Role to use to collect executions data\
 To add additional monitored environments, simply append another dictionary block with the same structure. \
 
 **Delivery Methods Configuration**:
@@ -120,7 +120,7 @@ To add additional monitored environments, simply append another dictionary block
 To add additional delivery method, simply append another dictionary block with the same structure. \
 
 ### 3. Configure Monitoring Groups  <a name="configure-monitoring-groups"></a>
-The `monitoring_groups.json` configuration file defines groups of Glue jobs along with their SLA settings.
+The `monitoring_groups.json` configuration file lists all resources to be monitored, grouped logically. For example, all glue jobs and lambdas related to Data Ingestion Pipeline.
 ```json
 {
     "monitoring_groups": [
@@ -144,13 +144,15 @@ The `monitoring_groups.json` configuration file defines groups of Glue jobs alon
     ]
 }
 ```
-**Monitoring Groups Configuration**:
-- in the `group_name` parameter, enter the ID of your management account.
-- in the `glue_jobs` parameter, enter the ID of your management account.
-- in the `name` parameter, enter the ID of your management account.
-- in the `monitored_environment_name` parameter, enter the ID of your management account.
-- in the `sla_seconds`, enter an interval (in minutes) for extracting metrics from monitored environments.
-- in the `minimum_number_of_runs`, enter an interval (in minutes) for extracting metrics from monitored environments. \
+**Monitoring Groups Configuration**: \
+Inside group we list group elements with their properties. Properties list depends on element type (e.g. Glue Job can have properies such as "name", "sla_seconds", "minimum_number_of_runs"). Sometime we can have many glue job with the same prefix (like glue-pipeline1-ingest, glue-pipeline1-cleanse, glue-pipeline1-staging).
+It's also possible to describe those using wildcards: glue-pipeline1-*.
+- in the `group_name` parameter, specify the name of your monitoring pipeline (group).
+- the element `glue_jobs` should be adjusted in accordance with the monitoring resource type (glue_jobs, step_functions, lambda_functions, glue_workflows, glue_catalogs, glue_crawlers). 
+- in the `name` parameter, specify the resource name to be monitored (e.g., Glue Job name).
+- in the `monitored_environment_name` parameter, enter the name of your monitored environment (listed in the general settings).
+- in the `sla_seconds`, enter If execution time exceeds "sla_seconds", run will be counted as "sla miss" in report. If omitted or equals to 0 - not checked.
+- in the `minimum_number_of_runs`, enter Least number of runs expected. If it's less, then comments is shown in report and job is marked as problematic. If omitted or equals to 0 - not checked. \
 
 ### 4. Specify Recipients and Subscriptions  <a name="specify-recipients-and-subscriptions"></a> 
 The `recipients.json` file specifies recipients for alerts and digests, along with their subscriptions to monitoring groups.
@@ -172,21 +174,21 @@ The `recipients.json` file specifies recipients for alerts and digests, along wi
 }
 ```
 **Recipients Configuration**:
-- in the `recipient` parameter, enter the ID of your management account.
+- in the `recipient` parameter, enter an e-mail address of a person / delivery list to receive glue job failure notifications or daily digest reports.   
+**Note**: e-mail address must be verified in AWS SES.
 - in the `delivery_method` parameter, specify the delivery method name.
 - in the `monitoring_group` parameter, enter the ID of your management account.
-- in the `alerts`, enter an interval (in minutes) for extracting metrics from monitored environments.
-- in the `digest`, enter an interval (in minutes) for extracting metrics from monitored environments. \
+- in the `alerts`, enter whether recipient wants to receive e-mail on glue job failure (true/false)
+- in the `digest`, subscription flag for daily digest (true/false)
 
 ### 5. Provide Replacements for Rlaceholders (optional) <a name="provide-replacements-for-placeholders"></a> 
-Replacements list for placeholders in other setting JSON files. Placeholders inside general and other settings should be in double curly brackets (e.g. <<value>>)
+The `replacements.json` file provides replacements list for placeholders in other setting JSON files. Placeholders inside general and other settings should be in double curly brackets (e.g. `<<value>>`). For example, we defined the value for `<<env>>` as `dev`. This means that during deployment, wherever the `<<env>>` placeholder is used, it will be replaced with `dev`.
 
 ```json
 {
     "<<env>>": "dev",
     "<<tooling_account_id>>": "323432554",
-    "<<sender_email>>": "salmon-no-reply@soname.de",
-    "<<grafana_vpc_id>>": "vpc_id", 
-    "<<grafana_security_group_id>>": "security_group_id"
+    "<<sender_email>>": "salmon-no-reply@soname.de"
 }
 ```
+Using the placeholders provides flexibility and consistency in the configuration management. It allows you to define the generic configurations that can be easily customized for different environments or scenarios. This helps to streamline the deployment process and ensures that configurations remain consistent across different deployments.
