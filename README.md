@@ -130,7 +130,7 @@ If the Grafana deployment should be skipped, remove the following `grafana_insta
         }
 ```
 
-**Monitored Environments Configuration**:
+**Monitored Environments Configuration**: <a name="monitored-env-configs"></a>
 - `name` - the name of your Monitored environment. Refered in `monitoring_groups.json`.
 - `account_id`, `region` - AWS region and account ID of the account to be monitored.
 - [Optional] `metrics_extractor_role_arn` - IAM Role ARN to extract metrics for the resources running in another AWS account. Default value: `arn:aws:iam::{account_id}:role/role-salmon-cross-account-extract-metrics-dev`. 
@@ -205,7 +205,7 @@ The `recipients.json` file specifies recipients for alerts and digests, along wi
     
     > **NOTE:** the email address must be verified in AWS SES.
 - `delivery_method` - the delivery method name (specified in the general settings).
-- `monitoring_group` - the monitoring group name (specified in the monitoring groups settings).
+- `monitoring_group` - the monitoring group name (specified in the [monitoring groups](#monitored-env-configs)) settings .
 - `alerts` - indicate whether this recipient would like to receive notifications on failed runs (true/false).
 - `digest` - indicate whether this recipient would like to receive Daily Digest (true/false).
 
