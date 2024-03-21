@@ -47,7 +47,7 @@ The project utilizes the following configuration files:
 | `recipients.json`        | Specifies recipients for Alerts and Daily Digest reports, along with their subscriptions to monitoring groups. |
 | `replacements.json`      | [Optional] Contains a replacements list for placeholders in other setting JSON files. |
 
-### Deployment Process <a name="deployment-process"></a>
+### Deployment Process: <a name="deployment-process"></a>
 Before the deployment:
 * **Prepare Configuration Files**: Sample configurations serving as templates are located at the `/config/sample_settings` directory. Copy these templates to the `/config/settings` directory and fill in the required values as per your requirements (refer to [Configuration Steps](#configuration-steps)).
 
@@ -63,7 +63,7 @@ Follow these steps to configure the project according to your requirements:
 
 ### 1. Copy Configuration Samples <a name="copy-configuration-samples"></a>
 - Navigate to the `/config/sample_settings` directory
-- Copy the sample configuration files (`general.json`, `monitoring_groups.json`, `recipients.json`, and `replacements.json` if needed) to the `/config/settings` directory
+- Copy the sample configuration files (general.json, monitoring_groups.json, recipients.json, and replacements.json if needed) to the `/config/settings` directory
 
 > **NOTE:**
 > Always ensure that the settings you utilize are up-to-date.
