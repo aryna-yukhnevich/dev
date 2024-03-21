@@ -2,7 +2,9 @@
 
 ## Table of Contents
 * [Overview](#overview)
-* [Configuration Files](#configuration-files)
+    * [Key Configuration Features](#key-features)
+    * [Configuration Structure](#conf-structure)
+    * [Deployment Process](#deployment-process)
 * [Configuration Steps](#configuration-steps)
     1. [Copy Configuration Samples](#copy-configuration-samples)
     2. [Provide General Settings](#provide-general-settings)
@@ -13,12 +15,12 @@
 
 ## Overview
 This guide provides instructions on how to configure the SALMON project to suit your monitoring and alerting needs. 
-### Key Configuration Features:
+### Key Configuration Features: <a name="key-features"></a>
 * **Extending List Elements** - Each configuration file allows extending list elements, such as `monitored_environments` in `general.json`, with additional blocks of the same structure. This feature facilitates flexibility and scalability in managing configurations. You can effortlessly add or remove entities from the list without altering the file's structure, simplifying adaptation to environmental changes or evolving requirements.
 * **Secure Centralized Settings Storage** - All settings reside in a centralized location, namely an AWS S3 bucket, streamlining management and updates. Access to these settings is tightly controlled using AWS IAM policies, ensuring only authorized entities can read or modify configurations.
 * **Placeholders** - Some configuration files employ placeholders (e.g., `<<env>>`) enabling dynamic value insertion based on specific requirements. This feature enables the creation of generic configurations easily customizable for different environments or scenarios.
 * **Wildcards Support** - To monitor resources sharing a common prefix (e.g., glue-pipeline1-ingest, glue-pipeline1-cleanse, glue-pipeline1-staging), utilize wildcards such as glue-pipeline1`-*` within the `monitoring_groups.json` configuration file.
-### Configuration structure:
+### Configuration Structure: <a name="conf-structure"></a>
 ```
 project_root/
 │
@@ -36,16 +38,6 @@ project_root/
         ├── recipients.json
         └── replacements.json
 ```
-### Deployment Process
-Before the deployment:
-* **Prepare Configuration Files**: Sample configurations serving as templates are located at the `/config/sample_settings` directory. Copy these templates to the `/config/settings` directory and fill in the required values as per your requirements (refer to [Configuration Steps](#configuration-steps)).
-
-The configuration files are deployed as part of the AWS CDK deployment process:
-* The settings files located in the `/config/settings` directory are automatically uploaded to the AWS S3 bucket `s3-salmon-settings-<<stage-name>>`.
-* The CDK project references these settings from the S3 bucket during runtime, utilizing the configurations to set up the necessary infrastructure.
-* **Note:** If any modifications are made to the configuration files locally, you would need to redeploy the stacks in order to apply the changes in the S3 bucket (please refer to [Deployment and installation](deployment.md) for more details).
-
-## Configuration Files
 
 The project utilizes the following configuration files:
 | File Name                | Description                                                                 |
@@ -55,6 +47,14 @@ The project utilizes the following configuration files:
 | `recipients.json`        | Specifies recipients for alerts and digests, along with their subscriptions to monitoring groups. |
 | `replacements.json`      | [Optional] Contains a replacements list for placeholders in other setting JSON files. |
 
+### Deployment Process <a name="deployment-process"></a>
+Before the deployment:
+* **Prepare Configuration Files**: Sample configurations serving as templates are located at the `/config/sample_settings` directory. Copy these templates to the `/config/settings` directory and fill in the required values as per your requirements (refer to [Configuration Steps](#configuration-steps)).
+
+The configuration files are deployed as a part of the AWS CDK deployment process:
+* The settings files located in the `/config/settings` directory are automatically uploaded to the AWS S3 bucket `s3-salmon-settings-<<stage-name>>`.
+* The CDK project references these settings from the S3 bucket during runtime, utilizing the configurations to set up the necessary infrastructure.
+* **Note:** If any modifications are made to the configuration files locally, you would need to redeploy the stacks in order to apply the changes in the S3 bucket (please refer to [Deployment and installation](deployment.md) for more details).
 
 ## Configuration Steps
 
