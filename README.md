@@ -64,7 +64,9 @@ Follow these steps to configure the project according to your requirements:
 - Navigate to the `/config/sample_settings` directory
 - Copy the sample configuration files (`general.json`, `monitoring_groups.json`, `recipients.json`, and `replacements.json` if needed) to the `/config/settings` directory
 
-> **NOTE:** Always ensure that the settings you utilize are up-to-date.
+``` 
+Always ensure that the settings you utilize are up-to-date.
+```
 
 ### 2. Provide General Settings  <a name="provide-general-settings"></a>
 The  `general.json` configuration file sets up the tooling environment, monitored environments, and delivery methods. 
@@ -101,7 +103,10 @@ The  `general.json` configuration file sets up the tooling environment, monitore
 ```     
 **Tooling Environment Configuration**:
 - `name` - the name of your Tolling environment where SALMON monitoring and alerting infrastructure will be located. \
-**Note**: Here, `<<env>>` acts as a placeholder that represents the environment name. This allows you to specify a generic name for the tooling account while keeping the option to customize it based on the environment. To define the actual values for placeholders, you can use the `replacements.json` file (please refer to [Provide Replacements for Rlaceholders](#provide-replacements-for-placeholders)). This file serves as a mapping between placeholders and their corresponding values.
+---
+**NOTE**
+Here, `<<env>>` acts as a placeholder that represents the environment name. This allows you to specify a generic name for the tooling account while keeping the option to customize it based on the environment. To define the actual values for placeholders, you can use the `replacements.json` file (please refer to [Provide Replacements for Rlaceholders](#provide-replacements-for-placeholders)). This file serves as a mapping between placeholders and their corresponding values.
+---
 - `account_id`, `region` - AWS region and account ID for the Tolling environment.
 - `metrics_collection_interval_min` - an interval (in minutes) for extracting metrics from monitored environments.
 - `digest_report_period_hours` - how many recent hours should be covered in the Daily Digest report. Default value: `24` hours.
