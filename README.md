@@ -66,7 +66,7 @@ Follow these steps to configure the project according to your requirements:
 
 ### 2. Provide General Settings  <a name="provide-general-settings"></a>
 The  `general.json` configuration file sets up the tooling environment, monitored environments, and delivery methods. 
-```json
+```
 {
     "tooling_environment": {
         "name": "Tooling Account [<<env>>]",
@@ -146,7 +146,7 @@ You can specify multiple delivery methods (even for the same delivery type, no r
 
 ### 3. Configure Monitoring Groups  <a name="configure-monitoring-groups"></a>
 The `monitoring_groups.json` configuration file lists all resources to be monitored, grouped logically. For example, all Glue Jobs and Lambda functions can be related to Data Ingestion Pipeline. Inside each group we list group elements with their properties (such as name, sla_seconds, minimum_number_of_runs).
-```json
+```
 {
     "monitoring_groups": [
         {
@@ -189,7 +189,7 @@ The `monitoring_groups.json` configuration file lists all resources to be monito
 
 ### 4. Specify Recipients and Subscriptions  <a name="specify-recipients-and-subscriptions"></a> 
 The `recipients.json` file specifies recipients for alerts and digests, along with their subscriptions to the monitoring groups.
-```json
+```
 {
     "recipients": [
         {
