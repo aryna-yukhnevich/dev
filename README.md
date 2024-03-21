@@ -104,7 +104,7 @@ The  `general.json` configuration file sets up the tooling environment, monitore
 **Tooling Environment Configuration**:
 - `name` - the name of your Tolling environment where SALMON monitoring and alerting infrastructure will be located.
 
-    > Here, `<<env>>` acts as a placeholder that represents the environment name. This allows you to specify a generic name for the tooling account while keeping the option to customize it based on the environment. To define the actual values for placeholders, you can use the `replacements.json` file (please refer to [Provide Replacements for Rlaceholders](#provide-replacements-for-placeholders)). This file serves as a mapping between placeholders and their corresponding values.
+    > Here, `<<env>>` acts as a placeholder that represents the environment name. This allows you to specify a generic name for the tooling account while keeping the option to customize it based on the environment. To define the actual values for placeholders, you can use the `replacements.json` file (refer to [Provide Replacements for Rlaceholders](#provide-replacements-for-placeholders)). This file serves as a mapping between placeholders and their corresponding values.
 - `account_id`, `region` - AWS region and account ID for the Tolling environment.
 - `metrics_collection_interval_min` - an interval (in minutes) for extracting metrics from monitored environments.
 - `digest_report_period_hours` - how many recent hours should be covered in the Daily Digest report. Default value: `24` hours.
@@ -130,7 +130,7 @@ If the Grafana deployment should be skipped, remove the following `grafana_insta
         }
 ```
 
-**Monitored Environments Configuration**: <a name="monitored-env-configs"></a>
+**Monitored Environments Configuration**:
 - `name` - the name of your Monitored environment. Refered in `monitoring_groups.json`.
 - `account_id`, `region` - AWS region and account ID of the account to be monitored.
 - [Optional] `metrics_extractor_role_arn` - IAM Role ARN to extract metrics for the resources running in another AWS account. Default value: `arn:aws:iam::{account_id}:role/role-salmon-cross-account-extract-metrics-dev`. 
@@ -138,14 +138,14 @@ If the Grafana deployment should be skipped, remove the following `grafana_insta
 To specify additional monitored environments, simply append another dictionary block with the same structure.
  
 **Delivery Methods Configuration**:
-- `name` - the name of your delivery method. Refered in `recipients.json`.
+- `name` <a name="deliver-method-name"></a> - the name of your delivery method. Refered in `recipients.json`.
 - `delivery_method_type` - the delivery method type (AWS_SES, SMTP).
 - `sender_email` - the sender email for notifications and digests.
 
 To specify additional delivery method, simply append another dictionary block with the same structure.
 
 ### 3. Configure Monitoring Groups  <a name="configure-monitoring-groups"></a>
-The `monitoring_groups.json` configuration file lists all resources to be monitored, grouped logically. For example, all glue jobs and lambda functions can be related to Data Ingestion Pipeline.
+The `monitoring_groups.json` configuration file lists all resources to be monitored, grouped logically. For example, all Glue Jobs and Lambda functions can be related to Data Ingestion Pipeline.
 ```json
 {
     "monitoring_groups": [
@@ -204,8 +204,8 @@ The `recipients.json` file specifies recipients for alerts and digests, along wi
 - `recipient` - an email address of a person / delivery list to receive failure notifications or Daily Digest reports.   
     
     > **NOTE:** the email address must be verified in AWS SES.
-- `delivery_method` - the delivery method name (specified in the general settings).
-- `monitoring_group` - the monitoring group name (specified in the [monitoring groups](#monitored-env-configs)) settings .
+- `delivery_method` - the delivery method [name](#delivery-method-name) (specified in the general settings).
+- `monitoring_group` - the monitoring group name (specified in the monitoring groups settings).
 - `alerts` - indicate whether this recipient would like to receive notifications on failed runs (true/false).
 - `digest` - indicate whether this recipient would like to receive Daily Digest (true/false).
 
