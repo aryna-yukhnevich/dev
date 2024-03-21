@@ -12,8 +12,8 @@
 
 
 ## Overview
-This guide provides instructions on how to configure the SALMON project to suit your monitoring and alerting needs. \
-### Key Configuration Features::
+This guide provides instructions on how to configure the SALMON project to suit your monitoring and alerting needs. 
+### Key Configuration Features:
 * **Extending List Elements** - Each configuration file allows extending list elements, such as `monitored_environments` in `general.json`, with additional blocks of the same structure. This feature facilitates flexibility and scalability in managing configurations. You can effortlessly add or remove entities from the list without altering the file's structure, simplifying adaptation to environmental changes or evolving requirements.
 * **Secure Centralized Settings Storage** - All settings reside in a centralized location, namely an AWS S3 bucket, streamlining management and updates. Access to these settings is tightly controlled using AWS IAM policies, ensuring only authorized entities can read or modify configurations.
 * **Placeholders** - Some configuration files employ placeholders (e.g., `<<env>>`) enabling dynamic value insertion based on specific requirements. This feature enables the creation of generic configurations easily customizable for different environments or scenarios.
@@ -61,8 +61,7 @@ Follow these steps to configure the project according to your requirements:
 - **Note:** Always ensure that the settings you utilize are up-to-date
 
 ### 2. Provide General Settings  <a name="provide-general-settings"></a>
-The  `general.json` configuration file sets up the tooling environment, monitored environments, and delivery methods. \
-In each configuration file, if there is a list element (such as monitored_environments), it can be extended with additional blocks for each monitored environment/delivery method, etc with the same structure. This approach allows for flexibility and scalability in configuration management. You can easily add or remove entities from the list without modifying the structure of the configuration file. This simplifies the process of adapting the configuration to accommodate changes in your environment or requirements.
+The  `general.json` configuration file sets up the tooling environment, monitored environments, and delivery methods. 
 ```json
 {
     "tooling_environment": {
@@ -97,80 +96,44 @@ In each configuration file, if there is a list element (such as monitored_enviro
 **Tooling Environment Configuration**:
 - `name` - the name of your Tolling environment where SALMON monitoring and alerting infrastructure will be located. \
 **Note**: Here, `<<env>>` acts as a placeholder that represents the environment name. This allows you to specify a generic name for the tooling account while keeping the option to customize it based on the environment. To define the actual values for placeholders, you can use the `replacements.json` file (please refer to [Provide Replacements for Rlaceholders](#provide-replacements-for-placeholders)). This file serves as a mapping between placeholders and their corresponding values.
-- `account_id`, `region` - AWS region and account ID for this Tolling environment.
+- `account_id`, `region` - AWS region and account ID for the Tolling environment.
 - `metrics_collection_interval_min` - an interval (in minutes) for extracting metrics from monitored environments.
 - `digest_report_period_hours` - how many recent hours should be covered in the daily digest report. Default value: `24` hours.
-- `digest_cron_expression` - the cron schedule to trigger the daily digest report. Default value: `cron(0 8 * * ? *)`, every day at 8am UTC. \
-\
-    **Grafana Configuration** [Optional]: \
-    \
-    Only if the `grafana_instance` section exists, the Grafana stack will be deployed. 
-    If the Grafana stack should be deployed:
-    - `grafana_vpc_id` - specify the ID of the Amazon VPC where the Grafana instance will be deployed. At least 1 public subnet required.
-    - `grafana_security_group_id` - specify the ID of the security group that will be associated with the Grafana instance. Inbound access to Grafana’s default HTTP port: 3000 required. 
+- `digest_cron_expression` - the cron schedule to trigger the daily digest report. Default value: `cron(0 8 * * ? *)`, every day at 8am UTC.
 
-    Additionally, several optional configurations are available to customize the Grafana deployment: 
-    - `grafana_key_pair_name`: add this parameter and specify the name of the key pair to be associated with the Grafana instance. If not provided, a new key pair will be created during the stack deployment.
-    - `grafana_bitnami_image`: add this parameter and specify the Bitnami Grafana image from AWS Marketplace. Default value: `bitnami-grafana-10.2.2-1-r02-linux-debian-11-x86_64-hvm-ebs-nami`.
-    - `grafana_instance_type`: add this parameter and specify the EC2 instance type for the Grafana instance. Default value: `t3.micro`.
+**[Optional] Grafana Configuration**: 
 
-    If the Grafana deployment should be skipped, remove this `grafana_instance` nested configuration from the general settings, like shown below:
-    ```json
-    {
-        "tooling_environment": {
-            "name": "Tooling Account [<<env>>]",
-            "account_id": "<<tooling_account_id>>",
-            "region": "eu-central-1",
-            "metrics_collection_interval_min": 5,
-            "digest_report_period_hours" : 24, 
-            "digest_cron_expression": "cron(0 8 * * ? *)"
-        },
-        "monitored_environments": [
-            {
-                "name": "Dept1 Account [<<env>>]",
-                "account_id": "123456789",
-                "region": "eu-central-1",
-                "metrics_extractor_role_arn": "arn:aws:iam::123456789:role/role-salmon-cross-account-extract-metrics-dev"
-            }
-        ],
-        "delivery_methods": [
-            {
-                "name": "aws_ses",
-                "delivery_method_type": "AWS_SES",
-                "sender_email" : "<<sender_email>>"
-            }
-        ]
-    }
-    ``` 
+Only if the `grafana_instance` section exists, the Grafana stack will be deployed. 
+If the Grafana stack should be deployed:
+- `grafana_vpc_id` - specify the ID of the Amazon VPC where the Grafana instance will be deployed. At least 1 public subnet required.
+- `grafana_security_group_id` - specify the ID of the security group that will be associated with the Grafana instance. Inbound access to Grafana’s default HTTP port: 3000 required. 
+
+Additionally, several optional configurations are available to customize the Grafana deployment: 
+- `grafana_key_pair_name`: add this parameter and specify the name of the key pair to be associated with the Grafana instance. If not provided, a new key pair will be created during the stack deployment.
+- `grafana_bitnami_image`: add this parameter and specify the Bitnami Grafana image from AWS Marketplace. Default value: `bitnami-grafana-10.2.2-1-r02-linux-debian-11-x86_64-hvm-ebs-nami`.
+- `grafana_instance_type`: add this parameter and specify the EC2 instance type for the Grafana instance. Default value: `t3.micro`.
+
+If the Grafana deployment should be skipped, remove the `grafana_instance` nested configuration from the general settings:
+```json
+        "grafana_instance": {
+            "grafana_vpc_id": "<<grafana_vpc_id>>",
+            "grafana_security_group_id": "<<grafana_security_group_id>>"
+        }
+```
 
 **Monitored Environments Configuration**:
 - `name` - the name of your Monitored environment. Refered in `monitoring_groups.json`.
 - `account_id`, `region` - AWS region and account ID of the account to be monitored.
 - [Optional] `metrics_extractor_role_arn` - IAM Role ARN to extract metrics for the resources running in another AWS account. Default value: `arn:aws:iam::{account_id}:role/role-salmon-cross-account-extract-metrics-dev`. 
 
-To specify additional monitored environments, simply append another dictionary block with the same structure, like shown below:
-```json
-"monitored_environments": [
-    {
-        "name": "Dept1 Account [<<env>>]",
-        "account_id": "11111111",
-        "region": "eu-central-1",
-        "metrics_extractor_role_arn": "arn:aws:iam::11111111:role/role-salmon-cross-account-extract-metrics-dev"
-    },
-    {
-        "name": "Dept2 Account [<<env>>]",
-        "account_id": "22222222",
-        "region": "eu-central-1",
-        "metrics_extractor_role_arn": "arn:aws:iam::22222222:role/role-salmon-cross-account-extract-metrics-dev"
-    }
-]
-```  
+To specify additional monitored environments, simply append another dictionary block with the same structure.
+ 
 **Delivery Methods Configuration**:
 - `name` - the name of your delivery method. Refered in `recipients.json`.
 - `delivery_method_type` - the delivery method type (AWS_SES, SMTP).
 - `sender_email` - the sender email for notifications and digests.
 
-To add additional delivery method, simply append another dictionary block with the same structure.
+To specify additional delivery method, simply append another dictionary block with the same structure.
 
 ### 3. Configure Monitoring Groups  <a name="configure-monitoring-groups"></a>
 The `monitoring_groups.json` configuration file lists all resources to be monitored, grouped logically. For example, all glue jobs and lambda functions can be related to Data Ingestion Pipeline.
