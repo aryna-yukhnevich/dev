@@ -54,7 +54,8 @@ Before the deployment:
 The configuration files are deployed as a part of the AWS CDK deployment process:
 * The settings files located in the `/config/settings` directory are automatically uploaded to the AWS S3 bucket `s3-salmon-settings-<<stage-name>>`.
 * The CDK project references these settings from the S3 bucket during runtime, utilizing the configurations to set up the necessary infrastructure.
-> [!NOTE] If any modifications are made to the configuration files locally, you would need to redeploy the stacks in order to apply the changes to the S3 bucket (refer to [Deployment and installation](deployment.md) for more details).
+> **Note:**
+> If any modifications are made to the configuration files locally, you would need to redeploy the stacks in order to apply the changes to the S3 bucket (refer to [Deployment and installation](deployment.md) for more details).
 
 ## Configuration Steps
 
@@ -64,9 +65,8 @@ Follow these steps to configure the project according to your requirements:
 - Navigate to the `/config/sample_settings` directory
 - Copy the sample configuration files (`general.json`, `monitoring_groups.json`, `recipients.json`, and `replacements.json` if needed) to the `/config/settings` directory
 
-``` 
-Always ensure that the settings you utilize are up-to-date.
-```
+> **Note:**
+> Always ensure that the settings you utilize are up-to-date.
 
 ### 2. Provide General Settings  <a name="provide-general-settings"></a>
 The  `general.json` configuration file sets up the tooling environment, monitored environments, and delivery methods. 
@@ -102,10 +102,8 @@ The  `general.json` configuration file sets up the tooling environment, monitore
 }
 ```     
 **Tooling Environment Configuration**:
-- `name` - the name of your Tolling environment where SALMON monitoring and alerting infrastructure will be located. \
-<!---
-Here, `<<env>>` acts as a placeholder that represents the environment name. This allows you to specify a generic name for the tooling account while keeping the option to customize it based on the environment. To define the actual values for placeholders, you can use the `replacements.json` file (please refer to [Provide Replacements for Rlaceholders](#provide-replacements-for-placeholders)). This file serves as a mapping between placeholders and their corresponding values.
--->
+- `name` - the name of your Tolling environment where SALMON monitoring and alerting infrastructure will be located.
+    > Here, `<<env>>` acts as a placeholder that represents the environment name. This allows you to specify a generic name for the tooling account while keeping the option to customize it based on the environment. To define the actual values for placeholders, you can use the `replacements.json` file (please refer to [Provide Replacements for Rlaceholders](#provide-replacements-for-placeholders)). This file serves as a mapping between placeholders and their corresponding values.
 - `account_id`, `region` - AWS region and account ID for the Tolling environment.
 - `metrics_collection_interval_min` - an interval (in minutes) for extracting metrics from monitored environments.
 - `digest_report_period_hours` - how many recent hours should be covered in the Daily Digest report. Default value: `24` hours.
