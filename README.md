@@ -109,6 +109,7 @@ The  `general.json` configuration file sets up the tooling environment, monitore
 - `digest_cron_expression` - the cron schedule to trigger the daily digest report. Default value: `cron(0 8 * * ? *)`, every day at 8am UTC.
 
 **[Optional] Grafana Configuration**: 
+
 If the `grafana_instance` section exists, the Grafana stack will be deployed. Otherwhise, it will be skipped.
 - `grafana_vpc_id` - specify the ID of the Amazon VPC where the Grafana instance will be deployed. At least 1 public subnet required.
 - `grafana_security_group_id` - specify the ID of the security group that will be associated with the Grafana instance. Inbound access to Grafana’s default HTTP port: 3000 required. 
@@ -119,7 +120,7 @@ Additionally, several optional configurations are available to customize the Gra
 - `grafana_instance_type`: add this parameter and specify the EC2 instance type for the Grafana instance. Default value: `t3.micro`.
 
 To skip the Grafana stack, remove the following `grafana_instance` nested configuration from the general settings:
-```json
+```
         "grafana_instance": {
             "grafana_vpc_id": "<<grafana_vpc_id>>",
             "grafana_security_group_id": "<<grafana_security_group_id>>"
@@ -220,7 +221,7 @@ The `recipients.json` file specifies recipients for alerts and digests, along wi
 ### 5. [Optional] Provide Replacements for Rlaceholders <a name="provide-replacements-for-placeholders"></a> 
 The `replacements.json` file provides replacements list for placeholders in other setting JSON files. Placeholders inside general and other settings should be in double curly brackets (e.g. `<<value>>`). For example, we defined the value for `<<env>>` as `dev`. This means that during the deployment, wherever the `<<env>>` placeholder is used, it will be replaced with `dev`.
 
-```json
+```
 {
     "<<env>>": "dev",
     "<<tooling_account_id>>": "323432554",
