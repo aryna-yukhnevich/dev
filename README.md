@@ -16,9 +16,9 @@
 ## Overview
 This guide provides instructions on how to configure the SALMON project to suit your monitoring and alerting needs. 
 ### Key Configuration Features: <a name="key-features"></a>
-* **Extending List Elements** - Each configuration file allows extending list elements, such as `monitored_environments` in `general.json`, with additional blocks of the same structure. This feature facilitates flexibility and scalability in managing configurations. You can effortlessly add or remove entities from the list without altering the file's structure, simplifying adaptation to environmental changes or evolving requirements.
 * **Secure Centralized Settings Storage** - All settings reside in a centralized location, namely an AWS S3 bucket, streamlining management and updates. Access to these settings is tightly controlled using AWS IAM policies, ensuring only authorized entities can read or modify configurations.
 * **Placeholders** - Some configuration files employ placeholders (e.g., `<<env>>`) enabling dynamic value insertion based on specific requirements. This feature enables the creation of generic configurations easily customizable for different environments or scenarios.
+* **Extending List Elements** - Each configuration file allows extending list elements, such as `monitored_environments` in `general.json`, with additional blocks of the same structure. This feature facilitates flexibility and scalability in managing configurations. You can effortlessly add or remove entities from the list without altering the file's structure, simplifying adaptation to environmental changes or evolving requirements.
 * **Wildcards Support** - To monitor resources sharing a common prefix (e.g., glue-pipeline1-ingest, glue-pipeline1-cleanse, glue-pipeline1-staging), utilize wildcards such as glue-pipeline1`-*` within the `monitoring_groups.json` configuration file.
 ### Configuration Structure: <a name="conf-structure"></a>
 ```
@@ -44,7 +44,7 @@ The project utilizes the following configuration files:
 |--------------------------|-----------------------------------------------------------------------------|
 | `general.json`           | Contains general settings for the tooling environment, monitored environments, and delivery methods. |
 | `monitoring_groups.json` | Defines all resources to be monitored, grouped logically. |
-| `recipients.json`        | Specifies recipients for Alerts and Daily Digest reports, along with their subscriptions to monitoring groups. |
+| `recipients.json`        | Specifies recipients for alerts and daily digest reports, along with their subscriptions to monitoring groups. |
 | `replacements.json`      | [Optional] Contains a replacements list for placeholders in other setting JSON files. |
 
 ### Deployment Process: <a name="deployment-process"></a>
@@ -145,7 +145,7 @@ To specify additional monitored environments, simply append another dictionary b
 To specify additional delivery method, simply append another dictionary block with the same structure.
 
 ### 3. Configure Monitoring Groups  <a name="configure-monitoring-groups"></a>
-The `monitoring_groups.json` configuration file lists all resources to be monitored, grouped logically. For example, all Glue Jobs and Lambda functions can be related to Data Ingestion Pipeline.
+The `monitoring_groups.json` configuration file lists all resources to be monitored, grouped logically. For example, all Glue Jobs and Lambda functions can be related to Data Ingestion Pipeline. Inside each group we list group elements with their properties (such as name, sla_seconds, minimum_number_of_runs).
 ```json
 {
     "monitoring_groups": [
@@ -169,8 +169,7 @@ The `monitoring_groups.json` configuration file lists all resources to be monito
     ]
 }
 ```
-**Monitoring Groups Configuration**: \
-Inside each group we list group elements with their properties (such as name, sla_seconds, minimum_number_of_runs).
+**Monitoring Groups Configuration**: 
 - `group_name` - the name of your monitoring pipeline.
 - the element `glue_jobs` should be adjusted in accordance with the monitoring resource type (e.g., glue_jobs, step_functions, lambda_functions, glue_workflows, glue_catalogs, glue_crawlers). 
 - `name` - specify the resource name to be monitored.
@@ -178,8 +177,8 @@ Inside each group we list group elements with their properties (such as name, sl
     > If you would like to monitor the resources with the same prefix (e.g., glue-pipeline1-ingest, glue-pipeline1-cleanse, glue-pipeline1-staging), you can simply describe them using wildcards: glue-pipeline1`-*`.
 
 - `monitored_environment_name` - the name of your monitored environment (listed in the general settings).
-- [Optional] `sla_seconds` - specify the SLA for the resource execution time if applicable. If the execution time exceeds the SLA set, such resource run will be marked with the Warning status and the comment that some runs haven't met SLA (=<<sla_seconds>> sec) will be shown in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
-- [Optional] `minimum_number_of_runs` - specify the least number of runs expected if applicable. In this case if there have been less actual runs than expected, then such resource run will be marked with the Warning status and an additional comment will be shown in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
+- [Optional] `sla_seconds` - specify the SLA for the resource execution time if applicable. If the execution time exceeds the SLA set, such resource run will be marked with the Warning status and and an additional comment will be shown in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
+- [Optional] `minimum_number_of_runs` - specify the least number of runs expected if applicable. In this case if there have been less actual runs than expected, such resource run will be marked with the Warning status and an additional comment will be shown in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
 
 ### 4. Specify Recipients and Subscriptions  <a name="specify-recipients-and-subscriptions"></a> 
 The `recipients.json` file specifies recipients for alerts and digests, along with their subscriptions to the monitoring groups.
