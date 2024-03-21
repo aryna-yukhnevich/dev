@@ -54,7 +54,7 @@ Before the deployment:
 The configuration files are deployed as a part of the AWS CDK deployment process:
 * The settings files located in the `/config/settings` directory are automatically uploaded to the AWS S3 bucket `s3-salmon-settings-<<stage-name>>`.
 * The CDK project references these settings from the S3 bucket during runtime, utilizing the configurations to set up the necessary infrastructure.
-> **Note:**
+> **NOTE:**
 > If any modifications are made to the configuration files locally, you would need to redeploy the stacks in order to apply the changes to the S3 bucket (refer to [Deployment and installation](deployment.md) for more details).
 
 ## Configuration Steps
@@ -65,7 +65,7 @@ Follow these steps to configure the project according to your requirements:
 - Navigate to the `/config/sample_settings` directory
 - Copy the sample configuration files (`general.json`, `monitoring_groups.json`, `recipients.json`, and `replacements.json` if needed) to the `/config/settings` directory
 
-> **Note:**
+> **NOTE:**
 > Always ensure that the settings you utilize are up-to-date.
 
 ### 2. Provide General Settings  <a name="provide-general-settings"></a>
@@ -172,8 +172,8 @@ The `monitoring_groups.json` configuration file lists all resources to be monito
 Inside each group we list group elements with their properties (such as `name`, `sla_seconds`, `minimum_number_of_runs`).
 - `group_name` - the name of your monitoring pipeline.
 - the element `glue_jobs` should be adjusted in accordance with the monitoring resource type (e.g., `glue_jobs`, `step_functions`, `lambda_functions`, `glue_workflows`, `glue_catalogs`, `glue_crawlers`). 
-- `name` - specify the resource name to be monitored. \
-**Note**: If you would like to monitor the resources with the same prefix (e.g., glue-pipeline1-ingest, glue-pipeline1-cleanse, glue-pipeline1-staging), you can simply describe them using wildcards: `glue-pipeline1-*`.
+- `name` - specify the resource name to be monitored.
+    > If you would like to monitor the resources with the same prefix (e.g., glue-pipeline1-ingest, glue-pipeline1-cleanse, glue-pipeline1-staging), you can simply describe them using wildcards: `glue-pipeline1-*`.
 - `monitored_environment_name` - the name of your monitored environment (listed in the general settings).
 - [Optional] `sla_seconds` - specify the SLA for the resource execution time if applicable. If the execution time exceeds `sla_seconds`, such resource run will be marked with the Warning status and the comment that some runs haven't met SLA (=<<sla_seconds>> sec) will be shown in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
 - [Optional] `minimum_number_of_runs` - specify the least number of runs expected if applicable. In this case if there have been less actual runs than expected, then such resource run will be marked with the Warning status and an additional comment will be shown in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
@@ -199,7 +199,7 @@ The `recipients.json` file specifies recipients for alerts and digests, along wi
 ```
 **Recipients Configuration**:
 - `recipient` - an email address of a person / delivery list to receive failure notifications or Daily Digest reports.   
-> **NOTE:** the email address must be verified in AWS SES.
+    > **NOTE:** the email address must be verified in AWS SES.
 - `delivery_method` - the delivery method name (specified in the general settings).
 - `monitoring_group` - the monitoring group name (specified in the monitoring groups settings).
 - `alerts` - indicate whether this recipient would like to receive notifications on failed runs (true/false).
