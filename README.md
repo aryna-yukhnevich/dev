@@ -138,9 +138,7 @@ If the Grafana deployment should be skipped, remove the following `grafana_insta
 To specify additional monitored environments, simply append another dictionary block with the same structure.
  
 **Delivery Methods Configuration**:
-<a name="delivery-method-name">
-- `name` - the name of your delivery method. Refered in `recipients.json`. 
-</a> 
+- `name` - the name of your delivery method. Refered in `recipients.json`.
 - `delivery_method_type` - the delivery method type (AWS_SES, SMTP).
 - `sender_email` - the sender email for notifications and digests.
 
@@ -172,15 +170,15 @@ The `monitoring_groups.json` configuration file lists all resources to be monito
 }
 ```
 **Monitoring Groups Configuration**: \
-Inside each group we list group elements with their properties (such as `name`, `sla_seconds`, `minimum_number_of_runs`).
+Inside each group we list group elements with their properties (such as name, sla_seconds, minimum_number_of_runs).
 - `group_name` - the name of your monitoring pipeline.
-- the element `glue_jobs` should be adjusted in accordance with the monitoring resource type (e.g., `glue_jobs`, `step_functions`, `lambda_functions`, `glue_workflows`, `glue_catalogs`, `glue_crawlers`). 
+- the element `glue_jobs` should be adjusted in accordance with the monitoring resource type (e.g., glue_jobs, step_functions, lambda_functions, glue_workflows, glue_catalogs, glue_crawlers). 
 - `name` - specify the resource name to be monitored.
 
-    > If you would like to monitor the resources with the same prefix (e.g., glue-pipeline1-ingest, glue-pipeline1-cleanse, glue-pipeline1-staging), you can simply describe them using wildcards: `glue-pipeline1-*`.
+    > If you would like to monitor the resources with the same prefix (e.g., glue-pipeline1-ingest, glue-pipeline1-cleanse, glue-pipeline1-staging), you can simply describe them using wildcards: glue-pipeline1`-*`.
 
 - `monitored_environment_name` - the name of your monitored environment (listed in the general settings).
-- [Optional] `sla_seconds` - specify the SLA for the resource execution time if applicable. If the execution time exceeds `sla_seconds`, such resource run will be marked with the Warning status and the comment that some runs haven't met SLA (=<<sla_seconds>> sec) will be shown in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
+- [Optional] `sla_seconds` - specify the SLA for the resource execution time if applicable. If the execution time exceeds the SLA set, such resource run will be marked with the Warning status and the comment that some runs haven't met SLA (=<<sla_seconds>> sec) will be shown in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
 - [Optional] `minimum_number_of_runs` - specify the least number of runs expected if applicable. In this case if there have been less actual runs than expected, then such resource run will be marked with the Warning status and an additional comment will be shown in the Daily Digest. If this parameter is not set or equals to zero - the check is not applied during the Digest generation.
 
 ### 4. Specify Recipients and Subscriptions  <a name="specify-recipients-and-subscriptions"></a> 
@@ -206,7 +204,7 @@ The `recipients.json` file specifies recipients for alerts and digests, along wi
 - `recipient` - an email address of a person / delivery list to receive failure notifications or Daily Digest reports.   
     
     > **NOTE:** the email address must be verified in AWS SES.
-- `delivery_method` - the delivery method [name](#delivery-method-name) (specified in the general settings).
+- `delivery_method` - the delivery method name (specified in the general settings).
 - `monitoring_group` - the monitoring group name (specified in the monitoring groups settings).
 - `alerts` - indicate whether this recipient would like to receive notifications on failed runs (true/false).
 - `digest` - indicate whether this recipient would like to receive Daily Digest (true/false).
