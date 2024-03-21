@@ -138,7 +138,7 @@ If the Grafana deployment should be skipped, remove the following `grafana_insta
 To specify additional monitored environments, simply append another dictionary block with the same structure.
  
 **Delivery Methods Configuration**:
-- `name` <a name="deliver-method-name"></a> - the name of your delivery method. Refered in `recipients.json`.
+- `name`- the name of your delivery method. Refered in `recipients.json`.  <a name="deliver-method-name"></a> 
 - `delivery_method_type` - the delivery method type (AWS_SES, SMTP).
 - `sender_email` - the sender email for notifications and digests.
 
