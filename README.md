@@ -13,7 +13,12 @@
 
 ## Overview
 This guide provides instructions on how to configure the SALMON project to suit your monitoring and alerting needs. \
-The configuration files are structured as follows:
+### Key Configuration Features::
+* **Extending List Elements** - Each configuration file allows extending list elements, such as `monitored_environments` in `general.json`, with additional blocks of the same structure. This feature facilitates flexibility and scalability in managing configurations. You can effortlessly add or remove entities from the list without altering the file's structure, simplifying adaptation to environmental changes or evolving requirements.
+* **Secure Centralized Settings Storage** - All settings reside in a centralized location, namely an AWS S3 bucket, streamlining management and updates. Access to these settings is tightly controlled using AWS IAM policies, ensuring only authorized entities can read or modify configurations.
+* **Placeholders** - Some configuration files employ placeholders (e.g., `<<env>>`) enabling dynamic value insertion based on specific requirements. This feature enables the creation of generic configurations easily customizable for different environments or scenarios.
+* **Wildcards Support** - To monitor resources sharing a common prefix (e.g., glue-pipeline1-ingest, glue-pipeline1-cleanse, glue-pipeline1-staging), utilize wildcards such as glue-pipeline1`-*` within the `monitoring_groups.json` configuration file.
+### Configuration structure:
 ```
 project_root/
 │
@@ -52,11 +57,12 @@ Follow these steps to configure the project according to your requirements:
 
 ### 1. Copy Configuration Samples <a name="copy-configuration-samples"></a>
 - Navigate to the `/config/sample_settings` directory
-- Copy the sample configuration files (`general.json`, `monitoring_groups.json`, `recipients.json`, and `replacements.json` if needed) to the `/config/settings` directory.
-- **Note:** Always ensure that the settings you utilize are up-to-date.
+- Copy the sample configuration files (`general.json`, `monitoring_groups.json`, `recipients.json`, and `replacements.json` if needed) to the `/config/settings` directory
+- **Note:** Always ensure that the settings you utilize are up-to-date
 
 ### 2. Provide General Settings  <a name="provide-general-settings"></a>
-The  `general.json` configuration file sets up the tooling environment, monitored environments, and delivery methods.
+The  `general.json` configuration file sets up the tooling environment, monitored environments, and delivery methods. \
+In each configuration file, if there is a list element (such as monitored_environments), it can be extended with additional blocks for each monitored environment/delivery method, etc with the same structure. This approach allows for flexibility and scalability in configuration management. You can easily add or remove entities from the list without modifying the structure of the configuration file. This simplifies the process of adapting the configuration to accommodate changes in your environment or requirements.
 ```json
 {
     "tooling_environment": {
@@ -140,10 +146,25 @@ The  `general.json` configuration file sets up the tooling environment, monitore
 **Monitored Environments Configuration**:
 - `name` - the name of your Monitored environment. Refered in `monitoring_groups.json`.
 - `account_id`, `region` - AWS region and account ID of the account to be monitored.
-- [Optional] `metrics_extractor_role_arn` - IAM Role ARN to extract metrics for the resources running in another AWS account. Default value: `arn:aws:iam::{account_id}:role/role-salmon-cross-account-extract-metrics-dev`. \
+- [Optional] `metrics_extractor_role_arn` - IAM Role ARN to extract metrics for the resources running in another AWS account. Default value: `arn:aws:iam::{account_id}:role/role-salmon-cross-account-extract-metrics-dev`. 
 
-To add additional monitored environments, simply append another dictionary block with the same structure. 
-
+To specify additional monitored environments, simply append another dictionary block with the same structure, like shown below:
+```json
+"monitored_environments": [
+    {
+        "name": "Dept1 Account [<<env>>]",
+        "account_id": "11111111",
+        "region": "eu-central-1",
+        "metrics_extractor_role_arn": "arn:aws:iam::11111111:role/role-salmon-cross-account-extract-metrics-dev"
+    },
+    {
+        "name": "Dept2 Account [<<env>>]",
+        "account_id": "22222222",
+        "region": "eu-central-1",
+        "metrics_extractor_role_arn": "arn:aws:iam::22222222:role/role-salmon-cross-account-extract-metrics-dev"
+    }
+]
+```  
 **Delivery Methods Configuration**:
 - `name` - the name of your delivery method. Refered in `recipients.json`.
 - `delivery_method_type` - the delivery method type (AWS_SES, SMTP).
