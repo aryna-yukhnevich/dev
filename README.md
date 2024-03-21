@@ -54,7 +54,8 @@ Before the deployment:
 The configuration files are deployed as a part of the AWS CDK deployment process:
 * The settings files located in the `/config/settings` directory are automatically uploaded to the AWS S3 bucket `s3-salmon-settings-<<stage-name>>`.
 * The CDK project references these settings from the S3 bucket during runtime, utilizing the configurations to set up the necessary infrastructure.
-* **Note:** If any modifications are made to the configuration files locally, you would need to redeploy the stacks in order to apply the changes in the S3 bucket (please refer to [Deployment and installation](deployment.md) for more details).
+
+**Note:** If any modifications are made to the configuration files locally, you would need to redeploy the stacks in order to apply the changes in the S3 bucket (please refer to [Deployment and installation](deployment.md) for more details).
 
 ## Configuration Steps
 
@@ -63,7 +64,8 @@ Follow these steps to configure the project according to your requirements:
 ### 1. Copy Configuration Samples <a name="copy-configuration-samples"></a>
 - Navigate to the `/config/sample_settings` directory
 - Copy the sample configuration files (`general.json`, `monitoring_groups.json`, `recipients.json`, and `replacements.json` if needed) to the `/config/settings` directory
-- **Note:** Always ensure that the settings you utilize are up-to-date
+
+**Note:** Always ensure that the settings you utilize are up-to-date.
 
 ### 2. Provide General Settings  <a name="provide-general-settings"></a>
 The  `general.json` configuration file sets up the tooling environment, monitored environments, and delivery methods. 
