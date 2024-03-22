@@ -57,7 +57,7 @@ The configuration files from the `/config/settings` directory are deployed as a 
 Follow these steps to configure the project according to your requirements:
 
 ### 1. Create Configuration Files <a name="create-configuration-files"></a>
-The initial step is to create the necessary configuration files: **general.json**, **monitoring_groups.json**, **recipients.json**, and **replacements.json** (if required) within the `/config/settings` directory. For a streamlined setup, you can utilize the sample configuration files provided in the `/config/sample_settings` directory.
+The initial step is to create the necessary configuration files: **general.json**, **monitoring_groups.json**, **recipients.json**, and **replacements.json** (if required) within the `/config/settings` directory. For a quick start, you can utilize the sample configuration files provided in the `/config/sample_settings` directory.
 
 > **NOTE:**
 > Always ensure that the settings you utilize are up-to-date.
