@@ -15,7 +15,7 @@
 ## Quick Start <a name="quick-start"></a>
 This guide provides instructions on how to configure the SALMON project to suit your monitoring and alerting needs. 
 
-### Configuration Structure: <a name="conf-structure"></a>
+#### Configuration Structure: <a name="conf-structure"></a>
 ```
 project_root/
 │
@@ -42,10 +42,10 @@ The project utilizes the following configuration files:
 | `recipients.json`        | Specifies recipients for alerts and daily digest reports, along with their subscriptions to monitoring groups. |
 | `replacements.json`      | [Optional] Contains a replacements list for placeholders in other setting JSON files. |
 
-### Deployment Process <a name="deployment-process"></a>
+#### Deployment Process <a name="deployment-process"></a>
 
 Before the deployment:
-* **Prepare Configuration Files**: Sample configurations serving as templates are located at the `/config/sample_settings` directory. Copy these templates to the `/config/settings` directory and fill in the required values as per your requirements (refer to [Configuration Steps](#configuration-steps)).
+* **Prepare Configuration Files**: Sample configurations serving as templates are located at the `/config/sample_settings` directory. Copy these templates to the `/config/settings` directory if necessary and fill in the required values as per your requirements (refer to [Configuration Steps](#configuration-steps)).
 
 The configuration files from the `/config/settings` directory are deployed as a part of the AWS CDK deployment process:
 * Configuration files validated and automatically uploaded to the AWS S3 bucket `s3-salmon-settings-<<stage-name>>`.
@@ -58,8 +58,8 @@ The configuration files from the `/config/settings` directory are deployed as a 
 Follow these steps to configure the project according to your requirements:
 
 ### 1. [Optional] Copy Configuration Samples <a name="copy-configuration-samples"></a>
-- Navigate to the `/config/sample_settings` directory
-- Copy the sample configuration files (general.json, monitoring_groups.json, recipients.json, and replacements.json if needed) to the `/config/settings` directory
+- Navigate to the `/config/sample_settings` directory.
+- Copy the sample configuration files (general.json, monitoring_groups.json, recipients.json, and replacements.json if needed) to the `/config/settings` directory.
 
 > **NOTE:**
 > Always ensure that the settings you utilize are up-to-date.
@@ -111,8 +111,8 @@ The  `general.json` configuration file sets up the tooling environment, monitore
 **[Optional] Grafana Configuration**: 
 
 If the `grafana_instance` section exists, the Grafana stack will be deployed. Otherwhise, it will be skipped.
-- `grafana_vpc_id` - specify the ID of the Amazon VPC where the Grafana instance will be deployed. At least 1 public subnet required.
-- `grafana_security_group_id` - specify the ID of the security group that will be associated with the Grafana instance. Inbound access to Grafana’s default HTTP port: 3000 required. 
+- `grafana_vpc_id` - the Amazon VPC ID where the Grafana instance will be deployed. At least 1 public subnet required.
+- `grafana_security_group_id` - the security group ID that will be associated with the Grafana instance. Inbound access to Grafana’s default HTTP port: 3000 required. 
 
 Additionally, several optional configurations are available to customize the Grafana deployment: 
 - `grafana_key_pair_name`: add this parameter and specify the name of the key pair to be associated with the Grafana instance. If not provided, a new key pair will be created during the stack deployment.
@@ -136,7 +136,7 @@ You can specify multiple monitored environments.
  
 **Delivery Methods Configuration**:
 - `name` - the name of your delivery method. Refered in `recipients.json`.
-- `delivery_method_type` - the delivery method type (AWS_SES, SMTP). The primary delivery method for the current version is AWS SES (with plans to add more options such as SMTP, Slack and MS Teams channel notifications).
+- `delivery_method_type` - the delivery method type (AWS_SES, SMTP). The primary delivery method for the current version is AWS SES (SMTP, Slack and MS Teams channel will be introduced in the next versions).
 
 Based on the delivery method type, additional parameters are required:
 
@@ -213,8 +213,8 @@ The `recipients.json` file specifies recipients for alerts and digests, along wi
 - `recipient` - an email address of a person / delivery list to receive failure notifications or Daily Digest reports.   
     
     > **NOTE:** the email address must be verified in AWS SES.
-- `delivery_method` - the delivery method name (should match to one of the delivery method names defined in the general settings)
-- `monitoring_group` - the monitoring group name (should match to one of the monitoring group names defined in the monitoring groups settings).
+- `delivery_method` - the delivery method name (should match to one of the delivery method names defined in the `general.json`)
+- `monitoring_group` - the monitoring group name (should match to one of the monitoring group names defined in the `monitoring_groups.json`).
 - `alerts` - indicate whether this recipient would like to receive notifications on failed runs (true/false).
 - `digest` - indicate whether this recipient would like to receive Daily Digest (true/false).
 
@@ -228,4 +228,4 @@ The `replacements.json` file provides replacements list for placeholders in othe
     "<<sender_email>>": "salmon-no-reply@soname.de"
 }
 ```
-Using the placeholders provides flexibility and consistency in the configuration management. It allows you to define the generic configurations that can be easily customized for different environments or scenarios. This helps to streamline the deployment process and ensures that configurations remain consistent across different deployments.
+Using the placeholders provides flexibility and consistency in the configuration management. It allows you to define the generic configurations that can be easily customized for different environments (DEV, UAT, PROD, etc) or scenarios. This helps to streamline the deployment process and ensures that configurations remain consistent across different deployments.
