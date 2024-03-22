@@ -47,7 +47,7 @@ Before the deployment:
 * **Prepare Configuration Files**: Sample configurations serving as templates are located at the `/config/sample_settings` directory. Copy these templates to the `/config/settings` directory if necessary and fill in the required values as per your requirements (refer to [Configuration Steps](#configuration-steps)).
 
 The configuration files from the `/config/settings` directory are deployed as a part of the AWS CDK deployment process:
-* Configuration files validated and automatically uploaded to the AWS S3 bucket `s3-salmon-settings-<<stage-name>>`.
+* Configuration files are validated and automatically uploaded to the AWS S3 bucket `s3-salmon-settings-<<stage-name>>`.
 * The CDK project references these settings from the S3 bucket during runtime, utilizing the configurations to set up the necessary infrastructure.
 > **NOTE:**
 > If any modifications are made to the configuration files locally, you would need to redeploy the stacks in order to apply the changes to the S3 bucket (refer to [Deployment and installation](deployment.md) for more details).
@@ -57,9 +57,7 @@ The configuration files from the `/config/settings` directory are deployed as a 
 Follow these steps to configure the project according to your requirements:
 
 ### 1. Create Configuration Files <a name="create-configuration-files"></a>
-The first step is to create the configuration files: **general.json**, **monitoring_groups.json**, **recipients.json**, and _replacements.json_ if required in the `/config/settings` directory. \
-For a quick start, the sample configuration files from the `/config/sample_settings` directory can be used.
-
+The initial step is to create the necessary configuration files: **general.json**, **monitoring_groups.json**, **recipients.json**, and **replacements.json** (if required) within the `/config/settings` directory. For a streamlined setup, you can utilize the sample configuration files provided in the `/config/sample_settings` directory.
 
 > **NOTE:**
 > Always ensure that the settings you utilize are up-to-date.
